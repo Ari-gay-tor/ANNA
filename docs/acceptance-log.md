@@ -23,3 +23,7 @@ Manual checks Ari runs against the real model. One entry per slice. Failures als
 - Cancel a reminder from its chip and from `/reminders`: **pass** (Ari).
 - Forget a memory from its chip; the Memory page shows source, quote and confidence: **pass** (Ari).
 - **V0 definition of done: 27/27** (`docs/v0-acceptance.md`).
+
+## 2026-10-08: Slice 6
+- Real install by Ari; reminder toast popped up on screen with the window closed: **pass** (Ari).
+- Not yet confirmed: auto-start at a real Windows login.
