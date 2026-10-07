@@ -13,7 +13,7 @@ Product intent lives in `docs/SPEC.md`. This file says what gets built, in what 
 | 2 | Memory | done: reviewed, Ari manual Tests A + D + "tired" check passed 2026-10-07 |
 | 3 | Clarification and options | done: reviewed, Ari manual Tests B + C passed 2026-10-07 |
 | 4 | Reminders | built + reviewed; firing proven under next start (fake provider); live Gemini checks blocked by quota; waiting on Ari's Test E + F |
-| 5 | Behavior evals, failure log, acceptance walkthrough | in progress |
+| 5 | Behavior evals, failure log, acceptance walkthrough | built + reviewed (29 cases, fake-provider run proven); live eval run pending Gemini quota |
 
 ## Stack (decided)
 
