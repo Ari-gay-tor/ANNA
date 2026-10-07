@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { ReminderBanner } from "@/components/ReminderBanner";
 import { TopNav } from "@/components/TopNav";
 import "./globals.css";
 
@@ -13,6 +14,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body>
         <TopNav />
+        <ReminderBanner />
         <div className="content">{children}</div>
       </body>
     </html>

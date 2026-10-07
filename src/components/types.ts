@@ -2,9 +2,13 @@
 
 import type { Clarification } from "@/core/domain/clarification";
 import type { MemoryOrigin, MemoryType, OperationResult } from "@/core/domain/memory";
+import type { ReminderStatus } from "@/core/domain/reminder";
 
-/** What GET /api/conversations/[id] returns: created/updated ops also say whether the memory still exists. */
-export type ClientOperation = OperationResult & { exists?: boolean };
+/**
+ * What GET /api/conversations/[id] returns: created/updated memory ops also say whether the memory still exists,
+ * and reminder.created ops say the reminder's current status. Both are absent on a reply that was just generated.
+ */
+export type ClientOperation = OperationResult & { exists?: boolean; status?: ReminderStatus | "missing" };
 
 export interface ClientMessage {
   id: string;
@@ -38,4 +42,19 @@ export interface ClientConversation {
   title: string;
   createdAt: string;
   updatedAt: string;
+}
+
+/** A reminder as the API returns it (dates arrive as ISO strings). */
+export interface ClientReminder {
+  id: string;
+  text: string;
+  dueAt: string;
+  timezone: string;
+  status: ReminderStatus;
+  firedAt: string | null;
+  missed: boolean;
+  acknowledgedAt: string | null;
+  sourceConversationId: string | null;
+  sourceMessageId: string | null;
+  createdAt: string;
 }

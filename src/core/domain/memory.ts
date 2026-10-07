@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ReminderCreatedResultSchema, ReminderRejectedResultSchema } from "./reminder";
 
 export const MEMORY_TYPES = ["fact", "preference", "goal", "commitment", "pattern"] as const;
 export type MemoryType = (typeof MEMORY_TYPES)[number];
@@ -58,7 +59,7 @@ export type MemoryOperation = z.infer<typeof MemoryOperationSchema>;
 export type MemoryCreateOp = z.infer<typeof MemoryCreateOpSchema>;
 export type MemoryUpdateOp = z.infer<typeof MemoryUpdateOpSchema>;
 
-// What the runtime stores on Message.operations after a turn. The UI renders chips from these.
+// What the runtime stores on Message.operations after a turn (memory and reminder results). The UI renders chips from these.
 export const OperationResultSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("memory.created"), memoryId: z.string(), type: z.enum(MEMORY_TYPES), statement: z.string() }),
   z.object({
@@ -69,6 +70,8 @@ export const OperationResultSchema = z.discriminatedUnion("kind", [
   }),
   z.object({ kind: z.literal("memory.rejected"), origin: z.enum(["stated", "inferred"]), reason: z.string() }),
   z.object({ kind: z.literal("memory.skipped_duplicate"), statement: z.string() }),
+  ReminderCreatedResultSchema,
+  ReminderRejectedResultSchema,
 ]);
 
 export type OperationResult = z.infer<typeof OperationResultSchema>;

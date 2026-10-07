@@ -1,4 +1,4 @@
-// ANNA V0 schema (Slices 1-2; see docs/PLAN.md for the final shape).
+// ANNA V0 schema (Slices 1-4; see docs/PLAN.md for the final shape).
 // Enum-like fields are plain strings validated in src/core/domain.
 
 generator client {
@@ -48,4 +48,20 @@ model Memory {
 model Setting {
   key   String @id
   value String
+}
+
+model Reminder {
+  id                   String    @id @default(cuid())
+  text                 String
+  dueAt                DateTime // UTC instant
+  timezone             String // IANA zone used to resolve it
+  status               String // pending | fired | cancelled
+  firedAt              DateTime?
+  missed               Boolean   @default(false) // fired >2 min late (app was closed)
+  acknowledgedAt       DateTime?
+  sourceConversationId String?
+  sourceMessageId      String?
+  createdAt            DateTime  @default(now())
+
+  @@index([status, dueAt])
 }

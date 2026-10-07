@@ -1,6 +1,6 @@
 // Shared helpers for route handlers: body parsing and error-to-JSON mapping.
 
-import type { z } from "zod";
+import { z } from "zod";
 import { AnnaError, ReplyFailedError, type AnnaErrorKind } from "../core/domain/errors";
 import { LLMError, type LLMErrorKind } from "../core/llm/provider";
 
@@ -16,6 +16,7 @@ const ANNA_STATUS: Record<AnnaErrorKind, number> = {
   NOT_FOUND: 404,
   REPLY_NOT_NEEDED: 409,
   INVALID_INPUT: 400,
+  CONFLICT: 409,
 };
 
 /** Thrown by parseBody; mapped to a 400. */
@@ -34,6 +35,15 @@ export async function parseBody<T extends z.ZodType>(request: Request, schema: T
     const where = issue?.path.length ? `${issue.path.join(".")}: ` : "";
     throw new InvalidRequestError(`${where}${issue?.message ?? "Invalid request body."}`);
   }
+  return result.data;
+}
+
+const IdParams = z.object({ id: z.string().min(1).max(100) });
+
+/** Validates the `[id]` route param. Mapped to a 400 when unusable. */
+export async function parseParams(params: Promise<{ id: string }>): Promise<{ id: string }> {
+  const result = IdParams.safeParse(await params);
+  if (!result.success) throw new InvalidRequestError("id: a valid id is required.");
   return result.data;
 }
 

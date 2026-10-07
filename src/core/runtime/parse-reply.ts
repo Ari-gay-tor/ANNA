@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { ClarificationSchema, type Clarification } from "../domain/clarification";
 import { MemoryOperationSchema, type MemoryOperation } from "../domain/memory";
+import { ReminderOperationSchema, type ReminderOperation } from "../domain/reminder";
 import { normalizeClarification } from "./clarification";
 
 export const FALLBACK_REPLY = "Sorry — I had trouble forming a reply. Could you say that again?";
@@ -16,6 +17,10 @@ export interface ParsedReply {
   memoryOperations: MemoryOperation[];
   /** How many proposals were malformed and thrown away. The reply itself is kept. */
   droppedOperations: number;
+  /** The reminder proposal if it matched the schema (including "exactly one of localDateTime / inMinutes"). Whether it is allowed is decided later. */
+  reminderOperation: ReminderOperation | null;
+  /** True when the model sent a reminder operation that was malformed and thrown away. The reply itself is kept. */
+  droppedReminder: boolean;
 }
 
 // Loose on purpose: only `message` must be a string for parsing to continue. The clarification and each op are checked on their own.
@@ -23,6 +28,7 @@ const ReplyEnvelopeSchema = z.object({
   message: z.string().trim(),
   clarification: z.unknown().optional(),
   memoryOperations: z.unknown().optional(),
+  reminderOperation: z.unknown().optional(),
 });
 
 /**
@@ -39,7 +45,7 @@ export function parseAnnaResponse(text: string): ParsedReply | null {
   const envelope = ReplyEnvelopeSchema.safeParse(json);
   if (!envelope.success) return null;
 
-  const { message, clarification: proposedClarification, memoryOperations: proposed } = envelope.data;
+  const { message, clarification: proposedClarification, memoryOperations: proposed, reminderOperation: proposedReminder } = envelope.data;
 
   let clarification: Clarification | null = null;
   let droppedClarification = false;
@@ -52,7 +58,19 @@ export function parseAnnaResponse(text: string): ParsedReply | null {
   if (!message && !clarification) return null;
 
   const { memoryOperations, droppedOperations } = parseMemoryOperations(proposed);
-  return { message, clarification, droppedClarification, memoryOperations, droppedOperations };
+  const { reminderOperation, droppedReminder } = parseReminderOperation(proposedReminder);
+  return { message, clarification, droppedClarification, memoryOperations, droppedOperations, reminderOperation, droppedReminder };
+}
+
+function parseReminderOperation(proposed: unknown): { reminderOperation: ReminderOperation | null; droppedReminder: boolean } {
+  if (proposed === undefined || proposed === null) return { reminderOperation: null, droppedReminder: false };
+  // Some models send null for an optional field they are not using; that means "absent".
+  const cleaned =
+    typeof proposed === "object" && !Array.isArray(proposed)
+      ? Object.fromEntries(Object.entries(proposed).filter(([, value]) => value !== null))
+      : proposed;
+  const op = ReminderOperationSchema.safeParse(cleaned);
+  return op.success ? { reminderOperation: op.data, droppedReminder: false } : { reminderOperation: null, droppedReminder: true };
 }
 
 function parseMemoryOperations(proposed: unknown): { memoryOperations: MemoryOperation[]; droppedOperations: number } {

@@ -6,7 +6,9 @@ export type AnnaErrorKind =
   /** generateReply was called but the latest message is not from the user. */
   | "REPLY_NOT_NEEDED"
   /** Caller passed unusable input (e.g. empty text). */
-  | "INVALID_INPUT";
+  | "INVALID_INPUT"
+  /** The thing exists but is not in a state that allows this action (e.g. cancelling a reminder that already fired). */
+  | "CONFLICT";
 
 export class AnnaError extends Error {
   constructor(

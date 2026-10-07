@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ClarificationOptions } from "./ClarificationOptions";
 import { MemoryChips } from "./MemoryChips";
+import { ReminderChips } from "./ReminderChips";
 import type { ClientMessage } from "./types";
 import styles from "./MessageList.module.css";
 
@@ -39,6 +40,7 @@ export function MessageList({ messages, thinking, loading, onSelectOption }: Pro
               onForgotten={(id) => setForgotten((prev) => new Set(prev).add(id))}
             />
           )}
+          {m.role === "assistant" && m.operations && <ReminderChips operations={m.operations} />}
           {/* Buttons only on the very last message: any user message after it (typed or tapped) removes them. */}
           {m.role === "assistant" && m.clarification && index === messages.length - 1 && (
             <ClarificationOptions options={m.clarification.options} disabled={thinking} onSelect={onSelectOption} />

@@ -1,0 +1,41 @@
+.banner {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border-bottom: 1px solid var(--border);
+  background: var(--border);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--reminder-bg);
+}
+
+.text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.missed {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.dismiss {
+  flex: none;
+  padding: 4px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+}
+
+.error {
+  padding: 6px 16px;
+  background: var(--error-bg);
+  color: var(--error-text);
+  font-size: 14px;
+}

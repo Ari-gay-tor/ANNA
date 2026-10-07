@@ -1,5 +1,5 @@
 import { AnnaError } from "@/core/domain/errors";
-import { annotateOperations } from "@/core/runtime/annotate-operations";
+import { annotateOperations, reminderIdsIn } from "@/core/runtime/annotate-operations";
 import { errorResponse } from "@/server/http";
 import { getServices } from "@/server/anna";
 
@@ -12,9 +12,10 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     const conversation = await getServices().conversations.get(id);
     if (!conversation) throw new AnnaError("NOT_FOUND", "Conversation not found.");
     const { messages, ...rest } = conversation;
-    // Chips need to know whether the memory they point at has since been forgotten.
+    // Chips need to know whether the memory they point at has since been forgotten, and where each reminder stands.
     const existingIds = new Set((await getServices().memories.list()).map((m) => m.id));
-    return Response.json({ conversation: rest, messages: annotateOperations(messages, existingIds) });
+    const reminderStatuses = await getServices().reminderService.statuses(reminderIdsIn(messages));
+    return Response.json({ conversation: rest, messages: annotateOperations(messages, existingIds, reminderStatuses) });
   } catch (error) {
     return errorResponse(error);
   }

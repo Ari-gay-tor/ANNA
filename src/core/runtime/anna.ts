@@ -5,12 +5,14 @@ import type { Message } from "../domain/types";
 import { normalizeTimeZone } from "../domain/timezone";
 import type { LLMProvider, LLMRequest } from "../llm/provider";
 import type { OperationResult } from "../domain/memory";
-import type { ConversationRepository, MemoryRepository, SettingsRepository } from "../ports";
+import type { ConversationRepository, MemoryRepository, ReminderRepository, SettingsRepository } from "../ports";
 import { composeClarificationContent, toLLMMessages } from "./clarification";
 import { DEFAULT_TIMEZONE, buildSystemPrompt } from "./context";
 import { executeMemoryDecisions } from "./memory-execution";
 import { selectContextMemories } from "./memory-retrieval";
 import { validateMemoryOps } from "./memory-validation";
+import { executeReminderDecision } from "./reminder-execution";
+import { REASON_REMINDER_MALFORMED, validateReminderOp, type ReminderDecision } from "./reminder-validation";
 import { fallbackReply, parseAnnaResponse, type ParsedReply } from "./parse-reply";
 import { turnGuidanceHints } from "./turn-guidance";
 
@@ -23,6 +25,7 @@ export interface AnnaDeps {
   conversations: ConversationRepository;
   settings: SettingsRepository;
   memories: MemoryRepository;
+  reminders: ReminderRepository;
   clock: () => Date;
   /** One-line diagnostics (never message or memory content). Defaults to silent. */
   log?: (line: string) => void;
@@ -47,7 +50,7 @@ export interface Anna {
 }
 
 export function createAnna(deps: AnnaDeps): Anna {
-  const { provider, conversations, settings, memories, clock } = deps;
+  const { provider, conversations, settings, memories, reminders, clock } = deps;
   const log = deps.log ?? (() => {});
 
   async function generateReply(conversationId: string): Promise<Message> {
@@ -99,10 +102,26 @@ export function createAnna(deps: AnnaDeps): Anna {
         source: { conversationId, messageId: latest.id },
         log,
       });
+      // A reminderOperation that was present but malformed is a rejected reminder, not a silent drop: the model's message
+      // may say it is set, so the user must be told it is not. Only an absent or null reminderOperation means "no reminder".
+      let reminderDecision: ReminderDecision | null = null;
+      if (parsed.reminderOperation) {
+        reminderDecision = validateReminderOp({
+          op: parsed.reminderOperation,
+          userMessage: latest.content,
+          timeZone: await savedTimeZone(),
+          now: clock(),
+        });
+      } else if (parsed.droppedReminder) {
+        reminderDecision = { status: "rejected", reason: REASON_REMINDER_MALFORMED };
+      }
+      const reminderOutcome = reminderDecision
+        ? await executeReminderDecision({ decision: reminderDecision, reminders, source: { conversationId, messageId: latest.id }, log })
+        : { results: [], notices: [] };
       clarification = parsed.clarification;
       const text = clarification ? composeClarificationContent(parsed.message, clarification.question) : parsed.message;
-      content = [text, ...outcome.notices].join("\n");
-      operations = outcome.results;
+      content = [text, ...outcome.notices, ...reminderOutcome.notices].join("\n");
+      operations = [...outcome.results, ...reminderOutcome.results];
     }
 
     const assistantMessage = await conversations.appendMessage({
@@ -143,9 +162,14 @@ export function createAnna(deps: AnnaDeps): Anna {
     }
   }
 
-  async function currentTimeZone(): Promise<string> {
+  /** The saved timezone, or undefined when none is saved (reminders refuse to guess one). */
+  async function savedTimeZone(): Promise<string | undefined> {
     const saved = await settings.get(TIMEZONE_SETTING_KEY);
-    return (saved && normalizeTimeZone(saved)) || DEFAULT_TIMEZONE;
+    return (saved && normalizeTimeZone(saved)) || undefined;
+  }
+
+  async function currentTimeZone(): Promise<string> {
+    return (await savedTimeZone()) ?? DEFAULT_TIMEZONE;
   }
 
   return { handleMessage, generateReply };

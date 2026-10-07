@@ -12,7 +12,7 @@ Product intent lives in `docs/SPEC.md`. This file says what gets built, in what 
 | 1b | Gemini timeout fallthrough, OpenAI-compatible provider (local Ollama/LM Studio), provider fallback chain, `docs/providers.md` | done: reviewed, live Gemini verified (added at Ari's request 2026-10-07); live local-model call untested (no Ollama model installed) |
 | 2 | Memory | done: reviewed, Ari manual Tests A + D + "tired" check passed 2026-10-07 |
 | 3 | Clarification and options | done: reviewed, Ari manual Tests B + C passed 2026-10-07 |
-| 4 | Reminders | in progress |
+| 4 | Reminders | built + reviewed; firing proven under next start (fake provider); live Gemini checks blocked by quota; waiting on Ari's Test E + F |
 | 5 | Behavior evals, failure log, acceptance walkthrough | not started |
 
 ## Stack (decided)

@@ -5,10 +5,12 @@ import type { PrismaClient } from "@prisma/client";
 import { createPrismaClient } from "../src/data/prisma";
 import { PrismaConversationRepository } from "../src/data/conversation-repository";
 import { PrismaMemoryRepository } from "../src/data/memory-repository";
+import { PrismaReminderRepository } from "../src/data/reminder-repository";
 import { PrismaSettingsRepository } from "../src/data/settings-repository";
 import { FakeProvider } from "../src/core/llm/fake";
 import { createAnna } from "../src/core/runtime/anna";
 import { createMemoryService } from "../src/core/runtime/memory-service";
+import { createReminderService } from "../src/core/runtime/reminder-service";
 
 const TEMPLATE_DIR = join(process.cwd(), "node_modules", ".anna-test");
 
@@ -30,8 +32,21 @@ export function testAnna(options: { now?: Date } = {}) {
   const settings = new PrismaSettingsRepository(db);
   const memories = new PrismaMemoryRepository(db);
   const now = options.now ?? FIXED_NOW;
-  const anna = createAnna({ provider, conversations, settings, memories, clock: () => now, log: (line) => logs.push(line) });
-  return { db, provider, conversations, settings, memories, memoryService: createMemoryService(memories), anna, logs };
+  const reminders = new PrismaReminderRepository(db);
+  const clock = () => now;
+  const anna = createAnna({ provider, conversations, settings, memories, reminders, clock, log: (line) => logs.push(line) });
+  return {
+    db,
+    provider,
+    conversations,
+    settings,
+    memories,
+    memoryService: createMemoryService(memories),
+    reminders,
+    reminderService: createReminderService(reminders, clock),
+    anna,
+    logs,
+  };
 }
 
 export const reply = (message: string) => JSON.stringify({ message });
@@ -42,3 +57,7 @@ export const replyWithOps = (message: string, memoryOperations: unknown[]) => JS
 /** A model reply carrying a clarification (and optionally other top-level fields such as memoryOperations). */
 export const replyWithClarification = (message: string, clarification: unknown, extra: Record<string, unknown> = {}) =>
   JSON.stringify({ message, clarification, ...extra });
+
+/** A model reply carrying a reminder operation (and optionally other top-level fields). */
+export const replyWithReminder = (message: string, reminderOperation: unknown, extra: Record<string, unknown> = {}) =>
+  JSON.stringify({ message, reminderOperation, ...extra });
