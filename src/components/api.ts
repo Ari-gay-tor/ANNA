@@ -43,10 +43,10 @@ export const api = {
   listConversations: () => request<{ conversations: ClientConversation[] }>("/api/conversations"),
   getConversation: (id: string) =>
     request<{ conversation: ClientConversation; messages: ClientMessage[] }>(`/api/conversations/${encodeURIComponent(id)}`),
-  chat: (conversationId: string | undefined, text: string) =>
+  chat: (conversationId: string | undefined, text: string, selectedOption?: boolean) =>
     request<{ conversationId: string; userMessage: ClientMessage; assistantMessage: ClientMessage }>(
       "/api/chat",
-      json("POST", { conversationId, text }),
+      json("POST", { conversationId, text, selectedOption: selectedOption || undefined }),
     ),
   retryReply: (conversationId: string) =>
     request<{ conversationId: string; assistantMessage: ClientMessage }>(

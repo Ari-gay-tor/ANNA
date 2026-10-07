@@ -79,19 +79,20 @@ export function ChatApp() {
   }
 
   /** Returns true if the user's message was accepted (saved), even when the reply failed. */
-  async function send(text: string): Promise<boolean> {
+  async function send(text: string, selectedOption = false): Promise<boolean> {
     const pending: ClientMessage = {
       id: `pending-${Date.now()}`,
       conversationId: activeIdRef.current ?? "",
       role: "user",
       content: text,
+      selectedOption,
       createdAt: new Date().toISOString(),
     };
     setMessages((m) => [...m, pending]);
     setBusy(true);
     setError(null);
     try {
-      const result = await api.chat(activeIdRef.current ?? undefined, text);
+      const result = await api.chat(activeIdRef.current ?? undefined, text, selectedOption);
       adopt(result.conversationId);
       setMessages((m) => [...m.filter((x) => x.id !== pending.id), result.userMessage, result.assistantMessage]);
       return true;
@@ -147,7 +148,7 @@ export function ChatApp() {
         onNew={() => router.push("/")}
       />
       <main className={styles.main}>
-        <MessageList messages={messages} thinking={busy} loading={loading} />
+        <MessageList messages={messages} thinking={busy} loading={loading} onSelectOption={(text) => void send(text, true)} />
         {error && (
           <div className={styles.error} role="alert">
             <span>{error}</span>
@@ -158,7 +159,7 @@ export function ChatApp() {
             )}
           </div>
         )}
-        <Composer disabled={busy} onSend={send} />
+        <Composer disabled={busy} onSend={(text) => send(text)} />
       </main>
     </div>
   );

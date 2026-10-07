@@ -1,15 +1,18 @@
 import { ANNA_RESPONSE_JSON_SCHEMA } from "../domain/anna-response";
 import { AnnaError, ReplyFailedError } from "../domain/errors";
+import type { Clarification } from "../domain/clarification";
 import type { Message } from "../domain/types";
 import { normalizeTimeZone } from "../domain/timezone";
 import type { LLMProvider, LLMRequest } from "../llm/provider";
 import type { OperationResult } from "../domain/memory";
 import type { ConversationRepository, MemoryRepository, SettingsRepository } from "../ports";
+import { composeClarificationContent, toLLMMessages } from "./clarification";
 import { DEFAULT_TIMEZONE, buildSystemPrompt } from "./context";
 import { executeMemoryDecisions } from "./memory-execution";
 import { selectContextMemories } from "./memory-retrieval";
 import { validateMemoryOps } from "./memory-validation";
 import { fallbackReply, parseAnnaResponse, type ParsedReply } from "./parse-reply";
+import { turnGuidanceHints } from "./turn-guidance";
 
 export const HISTORY_LIMIT = 20;
 export const TITLE_MAX_LENGTH = 60;
@@ -28,6 +31,8 @@ export interface AnnaDeps {
 export interface HandleMessageInput {
   conversationId?: string;
   text: string;
+  /** True when the text is a tapped option button rather than typed. Stored on the user message. */
+  selectedOption?: boolean;
 }
 
 export interface HandleMessageResult {
@@ -61,8 +66,9 @@ export function createAnna(deps: AnnaDeps): Anna {
     // whether they accept that, so always start from the first user message.
     const firstUser = history.findIndex((m) => m.role === "user");
     const request: LLMRequest = {
-      system: buildSystemPrompt(clock(), await currentTimeZone(), contextMemories),
-      messages: history.slice(firstUser).map((m) => ({ role: m.role, content: m.content })),
+      system: buildSystemPrompt(clock(), await currentTimeZone(), contextMemories, turnGuidanceHints(history)),
+      // Annotated copies for the model only; the stored messages are not changed.
+      messages: toLLMMessages(history.slice(firstUser)),
       jsonSchema: ANNA_RESPONSE_JSON_SCHEMA,
     };
 
@@ -76,7 +82,9 @@ export function createAnna(deps: AnnaDeps): Anna {
 
     let content = fallbackReply(rawText);
     let operations: OperationResult[] = [];
+    let clarification: Clarification | null = null;
     if (parsed) {
+      if (parsed.droppedClarification) log("[anna] dropped a malformed clarification");
       if (parsed.droppedOperations > 0) log(`[anna] dropped ${parsed.droppedOperations} malformed memory op(s)`);
       // Validation is pure; execution only runs what validation accepted. The model never touches the database.
       const decisions = validateMemoryOps({
@@ -91,11 +99,19 @@ export function createAnna(deps: AnnaDeps): Anna {
         source: { conversationId, messageId: latest.id },
         log,
       });
-      content = [parsed.message, ...outcome.notices].join("\n");
+      clarification = parsed.clarification;
+      const text = clarification ? composeClarificationContent(parsed.message, clarification.question) : parsed.message;
+      content = [text, ...outcome.notices].join("\n");
       operations = outcome.results;
     }
 
-    const assistantMessage = await conversations.appendMessage({ conversationId, role: "assistant", content, operations });
+    const assistantMessage = await conversations.appendMessage({
+      conversationId,
+      role: "assistant",
+      content,
+      operations,
+      clarification,
+    });
     await conversations.touch(conversationId);
     return assistantMessage;
   }
@@ -111,7 +127,12 @@ export function createAnna(deps: AnnaDeps): Anna {
       throw new AnnaError("NOT_FOUND", "Conversation not found.");
     }
 
-    const userMessage = await conversations.appendMessage({ conversationId, role: "user", content: text });
+    const userMessage = await conversations.appendMessage({
+      conversationId,
+      role: "user",
+      content: text,
+      selectedOption: input.selectedOption ?? false,
+    });
     await conversations.touch(conversationId);
 
     try {

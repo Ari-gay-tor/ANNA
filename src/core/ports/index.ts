@@ -1,3 +1,4 @@
+import type { Clarification } from "../domain/clarification";
 import type { Memory, MemoryOrigin, MemoryType, OperationResult } from "../domain/memory";
 import type { Conversation, ConversationWithMessages, Message, Role } from "../domain/types";
 
@@ -11,6 +12,8 @@ export interface ConversationRepository {
     role: Role;
     content: string;
     operations?: OperationResult[];
+    clarification?: Clarification | null;
+    selectedOption?: boolean;
   }): Promise<Message>;
   /** The last `limit` messages, oldest first. */
   recentMessages(conversationId: string, limit: number): Promise<Message[]>;

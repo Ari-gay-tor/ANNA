@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 const ChatBody = z.object({
   conversationId: z.string().min(1).optional(),
   text: z.string().trim().min(1, "Message is empty.").max(8000, "Message is too long (max 8000 characters)."),
+  selectedOption: z.boolean().optional(),
 });
 
 export async function POST(request: Request): Promise<Response> {

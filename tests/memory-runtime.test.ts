@@ -399,6 +399,8 @@ describe("annotateOperations (GET /api/conversations/[id])", () => {
           conversationId: "c",
           role: "assistant",
           content: "x",
+          clarification: null,
+          selectedOption: false,
           createdAt: now,
           operations: [
             { kind: "memory.rejected", origin: "stated", reason: "r" },

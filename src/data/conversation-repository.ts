@@ -1,5 +1,6 @@
 import type { Message as DbMessage, PrismaClient } from "@prisma/client";
 import type { Conversation, ConversationWithMessages, Message, Role } from "../core/domain/types";
+import { parseStoredClarification, type Clarification } from "../core/domain/clarification";
 import { parseStoredOperations, type OperationResult } from "../core/domain/memory";
 import type { ConversationRepository } from "../core/ports";
 
@@ -27,6 +28,8 @@ export class PrismaConversationRepository implements ConversationRepository {
     role: Role;
     content: string;
     operations?: OperationResult[];
+    clarification?: Clarification | null;
+    selectedOption?: boolean;
   }): Promise<Message> {
     // createdAt is the ordering key. Force it to be strictly increasing within a
     // conversation so two messages written in the same millisecond keep their order.
@@ -37,9 +40,20 @@ export class PrismaConversationRepository implements ConversationRepository {
         select: { createdAt: true },
       });
       const createdAt = new Date(Math.max(Date.now(), (last?.createdAt.getTime() ?? 0) + 1));
-      const { operations, ...fields } = input;
-      const stored = operations && operations.length > 0 ? JSON.stringify(operations) : null;
-      return toMessage(await tx.message.create({ data: { ...fields, operations: stored, createdAt } }));
+      const { operations, clarification, selectedOption, ...fields } = input;
+      const storedOperations = operations && operations.length > 0 ? JSON.stringify(operations) : null;
+      const storedClarification = clarification ? JSON.stringify(clarification) : null;
+      return toMessage(
+        await tx.message.create({
+          data: {
+            ...fields,
+            operations: storedOperations,
+            clarification: storedClarification,
+            selectedOption: selectedOption ?? false,
+            createdAt,
+          },
+        }),
+      );
     });
   }
 
@@ -64,6 +78,8 @@ function toMessage(row: DbMessage): Message {
     role: row.role === "assistant" ? "assistant" : "user",
     content: row.content,
     operations: parseStoredOperations(row.operations),
+    clarification: parseStoredClarification(row.clarification),
+    selectedOption: row.selectedOption,
     createdAt: row.createdAt,
   };
 }

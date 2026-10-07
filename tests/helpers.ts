@@ -38,3 +38,7 @@ export const reply = (message: string) => JSON.stringify({ message });
 
 /** A model reply carrying memory operations. */
 export const replyWithOps = (message: string, memoryOperations: unknown[]) => JSON.stringify({ message, memoryOperations });
+
+/** A model reply carrying a clarification (and optionally other top-level fields such as memoryOperations). */
+export const replyWithClarification = (message: string, clarification: unknown, extra: Record<string, unknown> = {}) =>
+  JSON.stringify({ message, clarification, ...extra });

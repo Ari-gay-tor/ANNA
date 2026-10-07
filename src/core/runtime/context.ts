@@ -1,5 +1,6 @@
 import type { Memory } from "../domain/memory";
 import { SYSTEM_PROMPT } from "../prompts/system";
+import { buildTurnGuidanceSection } from "./turn-guidance";
 
 export const DEFAULT_TIMEZONE = "UTC";
 
@@ -61,7 +62,18 @@ export function buildMemorySection(memories: readonly Memory[], timeZone: string
   return [MEMORY_SECTION_HEADER, ...lines].join("\n");
 }
 
-/** `memories` must already be the selected set (see selectContextMemories). */
-export function buildSystemPrompt(now: Date, timeZone: string, memories: readonly Memory[] = []): string {
-  return [SYSTEM_PROMPT, buildContextBlock(now, timeZone), buildMemorySection(memories, timeZone)].join("\n\n");
+/**
+ * `memories` must already be the selected set (see selectContextMemories).
+ * `guidance` is this turn's hints (see turnGuidanceHints); with none, there is no "Turn guidance:" section.
+ */
+export function buildSystemPrompt(
+  now: Date,
+  timeZone: string,
+  memories: readonly Memory[] = [],
+  guidance: readonly string[] = [],
+): string {
+  const sections = [SYSTEM_PROMPT, buildContextBlock(now, timeZone), buildMemorySection(memories, timeZone)];
+  const turnGuidance = buildTurnGuidanceSection(guidance);
+  if (turnGuidance) sections.push(turnGuidance);
+  return sections.join("\n\n");
 }
