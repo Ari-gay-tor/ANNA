@@ -11,3 +11,8 @@ Manual checks Ari runs against the real model. One entry per slice. Failures als
 - Spec Test D (conflicting preference → memory updated, not duplicated): **pass** (Ari).
 - "I'm tired today" creates no memory: **pass** (Ari).
 - Memory page edit + delete: **pass** (Ari).
+
+## 2026-10-07: Slice 3
+- Spec Test B (internship → options → "Not sure" narrows it down): **pass** (Ari).
+- Spec Test C (four tasks → one next action, no plan): **pass** (Ari).
+- Buttons vanish after a tap; typing instead works: **pass** (Ari).
