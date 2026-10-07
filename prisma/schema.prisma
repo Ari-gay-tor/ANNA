@@ -1,0 +1,38 @@
+// ANNA V0 schema (Slice 1 tables only; see docs/PLAN.md for the final shape).
+// Enum-like fields are plain strings validated in src/core/domain.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  title     String // first user message, truncated to 60 chars; no LLM call
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  messages  Message[]
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String // "user" | "assistant"
+  content        String
+  clarification  String? // JSON text {question, options[]}        (Slice 3)
+  operations     String? // JSON text: executed op results for chips (Slice 2+)
+  selectedOption Boolean      @default(false) // user message came from a tapped option (Slice 3)
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
+model Setting {
+  key   String @id
+  value String
+}
