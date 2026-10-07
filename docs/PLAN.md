@@ -6,7 +6,7 @@ Product intent lives in `docs/SPEC.md`. This file says what gets built, in what 
 
 ## Status
 
-**V0 is done (2026-10-07).** Next: one week of daily use, logging failures in `failure-modes.md` (spec §48). No new building until then.
+**V0 is done (2026-10-07).** Slice 6 (one-click app) was added at Ari's request before the use week, because needing a terminal to open ANNA would undermine the experiment (spec §32: do users choose to ask ANNA when stuck?). After Slice 6: one week of daily use, logging failures in `failure-modes.md` (spec §48).
 
 | Slice | What | Status |
 |---|---|---|
@@ -16,6 +16,7 @@ Product intent lives in `docs/SPEC.md`. This file says what gets built, in what 
 | 3 | Clarification and options | done: reviewed, Ari manual Tests B + C passed 2026-10-07 |
 | 4 | Reminders | done: reviewed; live eval + Ari's Test E and Cancel checks passed 2026-10-07 |
 | 5 | Behavior evals, failure log, acceptance walkthrough | done: first live eval 24/29, fixes re-run; V0 definition of done 27/27 (2026-10-07) |
+| 6 | One-click app on Ari's PC (own window, auto-start at login, Windows reminder toasts) | in progress |
 
 ## Stack (decided)
 
