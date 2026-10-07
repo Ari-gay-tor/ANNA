@@ -4,7 +4,7 @@ Nothing here gets built until V0 is done (`docs/PLAN.md` Slice 5) and a week of 
 
 | Item | Notes | Build it when |
 |---|---|---|
-| TTS (read replies aloud) | Ari already has a TTS on another machine. It is local-only and not in this repo. The likely shape is that machine running TTS as a small HTTP service on the LAN, and ANNA calling it behind a `SpeechProvider` interface, the same pattern as `LLMProvider`. Undecided. | Ari finds themself wanting to listen instead of read during the use week |
+| TTS (read replies aloud) | Prototype in GitHub `Ari-gay-tor/ANNA`, folder `ANNA-tts/`. It is Kokoro-82M (Python, runs locally) with a custom voice `voices/anna_voice.pt` and a "comms" audio effect. `speak.py` reads lines on stdin and plays them on the speakers of the machine it runs on. For a web app the audio has to play in the browser, so it needs to become a small local HTTP service that returns WAV, behind a `SpeechProvider` interface (same pattern as `LLMProvider`). Undecided whether that service runs on this machine or the other one. | Ari finds themself wanting to listen instead of read during the use week |
 | Speech-to-text input | Spec §16 long-term vision. | After TTS, and only if typing is the friction |
 | Anthropic adapter | Second `LLMProvider`. | Slice 5 evals show Gemini is weak at clarification/brevity |
 | Reminders outside the browser | Desktop notifications when ANNA isn't open, or a tray app. | Missed reminders show up in real use |
