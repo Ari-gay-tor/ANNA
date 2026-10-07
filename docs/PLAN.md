@@ -8,9 +8,9 @@ Product intent lives in `docs/SPEC.md`. This file says what gets built, in what 
 
 | Slice | What | Status |
 |---|---|---|
-| 1 | Scaffold, chat loop, persistence, provider interface | built + reviewed (criteria 1–4 proven); waiting on Ari's manual check (5) and a live Gemini run |
-| 1b | Gemini timeout fallthrough, OpenAI-compatible provider (local Ollama/LM Studio), provider fallback chain, `docs/providers.md` | built + reviewed (added at Ari's request 2026-10-07); live local-model call untested (no Ollama model installed) |
-| 2 | Memory | not started |
+| 1 | Scaffold, chat loop, persistence, provider interface | done: reviewed, Ari manual check passed 2026-10-07 (send, reply, restart, still there) |
+| 1b | Gemini timeout fallthrough, OpenAI-compatible provider (local Ollama/LM Studio), provider fallback chain, `docs/providers.md` | done: reviewed, live Gemini verified (added at Ari's request 2026-10-07); live local-model call untested (no Ollama model installed) |
+| 2 | Memory | built + reviewed; waiting on Ari's manual Tests A + D + "tired" check |
 | 3 | Clarification and options | not started |
 | 4 | Reminders | not started |
 | 5 | Behavior evals, failure log, acceptance walkthrough | not started |

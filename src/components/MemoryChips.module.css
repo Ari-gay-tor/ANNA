@@ -1,0 +1,39 @@
+.chips {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.chip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.gone {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.forget {
+  padding: 1px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  font-size: 13px;
+}
+
+.failed {
+  color: var(--error-text);
+  font-size: 13px;
+}

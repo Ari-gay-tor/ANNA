@@ -1,6 +1,7 @@
 .layout {
   display: flex;
-  height: 100dvh;
+  flex: 1;
+  min-height: 0;
 }
 
 .main {

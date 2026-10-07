@@ -1,4 +1,4 @@
-import type { ClientConversation, ClientMessage } from "./types";
+import type { ClientConversation, ClientMemory, ClientMessage } from "./types";
 
 /** A failed API call. When the server saved the user's message before failing, it is attached. */
 export class ApiFailure extends Error {
@@ -53,5 +53,9 @@ export const api = {
       `/api/conversations/${encodeURIComponent(conversationId)}/reply`,
       { method: "POST" },
     ),
+  listMemories: () => request<{ memories: ClientMemory[] }>("/api/memories"),
+  editMemory: (id: string, statement: string) =>
+    request<{ memory: ClientMemory }>(`/api/memories/${encodeURIComponent(id)}`, json("PATCH", { statement })),
+  deleteMemory: (id: string) => request<{ deleted: true }>(`/api/memories/${encodeURIComponent(id)}`, { method: "DELETE" }),
   saveTimezone: (timezone: string) => request<{ timezone: string }>("/api/settings/timezone", json("PUT", { timezone })),
 };

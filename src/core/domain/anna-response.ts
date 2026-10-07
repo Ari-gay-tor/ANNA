@@ -1,8 +1,10 @@
 import { z } from "zod";
+import { MemoryOperationSchema } from "./memory";
 
-/** What the model must return. Slice 1: a message only. */
+/** What the model must return: a message, plus optional memory operations (proposals only; the runtime decides). */
 export const AnnaResponseSchema = z.object({
   message: z.string().trim().min(1),
+  memoryOperations: z.array(MemoryOperationSchema).optional(),
 });
 
 export type AnnaResponse = z.infer<typeof AnnaResponseSchema>;

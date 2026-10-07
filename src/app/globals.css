@@ -24,6 +24,9 @@ body {
 }
 
 body {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
   background: var(--bg);
   color: var(--text);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -44,4 +47,12 @@ button {
 button:disabled {
   cursor: default;
   opacity: 0.55;
+}
+
+/* Everything under the top nav. Pages fill it and scroll inside it. */
+.content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }

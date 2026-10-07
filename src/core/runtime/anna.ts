@@ -3,9 +3,13 @@ import { AnnaError, ReplyFailedError } from "../domain/errors";
 import type { Message } from "../domain/types";
 import { normalizeTimeZone } from "../domain/timezone";
 import type { LLMProvider, LLMRequest } from "../llm/provider";
-import type { ConversationRepository, SettingsRepository } from "../ports";
+import type { OperationResult } from "../domain/memory";
+import type { ConversationRepository, MemoryRepository, SettingsRepository } from "../ports";
 import { DEFAULT_TIMEZONE, buildSystemPrompt } from "./context";
-import { fallbackReply, parseAnnaResponse } from "./parse-reply";
+import { executeMemoryDecisions } from "./memory-execution";
+import { selectContextMemories } from "./memory-retrieval";
+import { validateMemoryOps } from "./memory-validation";
+import { fallbackReply, parseAnnaResponse, type ParsedReply } from "./parse-reply";
 
 export const HISTORY_LIMIT = 20;
 export const TITLE_MAX_LENGTH = 60;
@@ -15,7 +19,10 @@ export interface AnnaDeps {
   provider: LLMProvider;
   conversations: ConversationRepository;
   settings: SettingsRepository;
+  memories: MemoryRepository;
   clock: () => Date;
+  /** One-line diagnostics (never message or memory content). Defaults to silent. */
+  log?: (line: string) => void;
 }
 
 export interface HandleMessageInput {
@@ -35,7 +42,8 @@ export interface Anna {
 }
 
 export function createAnna(deps: AnnaDeps): Anna {
-  const { provider, conversations, settings, clock } = deps;
+  const { provider, conversations, settings, memories, clock } = deps;
+  const log = deps.log ?? (() => {});
 
   async function generateReply(conversationId: string): Promise<Message> {
     const history = await conversations.recentMessages(conversationId, HISTORY_LIMIT);
@@ -45,28 +53,49 @@ export function createAnna(deps: AnnaDeps): Anna {
       throw new AnnaError("REPLY_NOT_NEEDED", "The latest message is not from the user, so there is nothing to reply to.");
     }
 
+    // All saved memories, so the duplicate check sees everything; only the selected ones go into the prompt.
+    const savedMemories = await memories.list();
+    const contextMemories = selectContextMemories(savedMemories, latest.content);
+
     // The window can start mid-conversation on an assistant turn. Providers differ in
     // whether they accept that, so always start from the first user message.
     const firstUser = history.findIndex((m) => m.role === "user");
     const request: LLMRequest = {
-      system: buildSystemPrompt(clock(), await currentTimeZone()),
+      system: buildSystemPrompt(clock(), await currentTimeZone(), contextMemories),
       messages: history.slice(firstUser).map((m) => ({ role: m.role, content: m.content })),
       jsonSchema: ANNA_RESPONSE_JSON_SCHEMA,
     };
 
     // Provider errors (LLMError) propagate untouched. Only invalid output is retried.
     let rawText = "";
-    let reply: string | null = null;
-    for (let attempt = 0; attempt < 2 && reply === null; attempt++) {
+    let parsed: ParsedReply | null = null;
+    for (let attempt = 0; attempt < 2 && parsed === null; attempt++) {
       rawText = (await provider.generate(request)).text;
-      reply = parseAnnaResponse(rawText)?.message ?? null;
+      parsed = parseAnnaResponse(rawText);
     }
 
-    const assistantMessage = await conversations.appendMessage({
-      conversationId,
-      role: "assistant",
-      content: reply ?? fallbackReply(rawText),
-    });
+    let content = fallbackReply(rawText);
+    let operations: OperationResult[] = [];
+    if (parsed) {
+      if (parsed.droppedOperations > 0) log(`[anna] dropped ${parsed.droppedOperations} malformed memory op(s)`);
+      // Validation is pure; execution only runs what validation accepted. The model never touches the database.
+      const decisions = validateMemoryOps({
+        ops: parsed.memoryOperations,
+        userMessage: latest.content,
+        contextMemories,
+        existingStatements: savedMemories.map((m) => m.statement),
+      });
+      const outcome = await executeMemoryDecisions({
+        decisions,
+        memories,
+        source: { conversationId, messageId: latest.id },
+        log,
+      });
+      content = [parsed.message, ...outcome.notices].join("\n");
+      operations = outcome.results;
+    }
+
+    const assistantMessage = await conversations.appendMessage({ conversationId, role: "assistant", content, operations });
     await conversations.touch(conversationId);
     return assistantMessage;
   }

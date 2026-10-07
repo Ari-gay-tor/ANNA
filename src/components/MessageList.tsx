@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { MemoryChips } from "./MemoryChips";
 import type { ClientMessage } from "./types";
 import styles from "./MessageList.module.css";
 
@@ -11,6 +12,8 @@ interface Props {
 
 export function MessageList({ messages, thinking, loading }: Props) {
   const endRef = useRef<HTMLDivElement>(null);
+  // Memories forgotten from a chip. Shared, so every chip pointing at the same memory flips together.
+  const [forgotten, setForgotten] = useState<ReadonlySet<string>>(new Set());
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
@@ -23,6 +26,13 @@ export function MessageList({ messages, thinking, loading }: Props) {
         <div key={m.id} className={m.role === "user" ? `${styles.message} ${styles.user}` : styles.message}>
           <div className={styles.author}>{m.role === "user" ? "You" : "ANNA"}</div>
           <div className={styles.content}>{m.content}</div>
+          {m.role === "assistant" && m.operations && (
+            <MemoryChips
+              operations={m.operations}
+              forgotten={forgotten}
+              onForgotten={(id) => setForgotten((prev) => new Set(prev).add(id))}
+            />
+          )}
         </div>
       ))}
       {thinking && <div className={styles.thinking}>thinking…</div>}

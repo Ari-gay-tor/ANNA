@@ -1,4 +1,4 @@
-// ANNA V0 schema (Slice 1 tables only; see docs/PLAN.md for the final shape).
+// ANNA V0 schema (Slices 1-2; see docs/PLAN.md for the final shape).
 // Enum-like fields are plain strings validated in src/core/domain.
 
 generator client {
@@ -30,6 +30,19 @@ model Message {
   createdAt      DateTime     @default(now())
 
   @@index([conversationId, createdAt])
+}
+
+model Memory {
+  id                   String   @id @default(cuid())
+  type                 String // fact | preference | goal | commitment | pattern
+  statement            String
+  confidence           Float // set by runtime, not trusted from model
+  origin               String // stated | inferred | edited
+  evidenceQuote        String?
+  sourceConversationId String?
+  sourceMessageId      String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 }
 
 model Setting {

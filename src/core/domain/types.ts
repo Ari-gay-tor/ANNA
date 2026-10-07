@@ -1,3 +1,5 @@
+import type { OperationResult } from "./memory";
+
 export type Role = "user" | "assistant";
 
 export interface Conversation {
@@ -12,6 +14,8 @@ export interface Message {
   conversationId: string;
   role: Role;
   content: string;
+  /** Results of the operations the runtime executed for this turn (chips). Empty for user messages. */
+  operations: OperationResult[];
   createdAt: Date;
 }
 

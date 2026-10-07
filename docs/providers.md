@@ -82,7 +82,7 @@ OPENAI_COMPAT_JSON_MODE=json_schema   # json_schema | json_object | none
 OPENAI_COMPAT_API_KEY=             # leave empty for local servers
 ```
 
-If a model keeps failing to return valid JSON, try `OPENAI_COMPAT_JSON_MODE=json_object`, then `none`.
+If a model keeps failing to return valid JSON, try `OPENAI_COMPAT_JSON_MODE=json_object`, then `none`. Also use `json_object` if a hosted endpoint rejects the schema with a "strict" error: ANNA's reply schema has optional fields, which strict OpenAI-style servers refuse.
 
 **Heads up:** small local models (7-8B) follow ANNA's rules (be brief, ask one question, return JSON) noticeably worse than Gemini. Expect longer, chattier replies and the occasional "Sorry, I had trouble forming a reply."
 

@@ -1,5 +1,6 @@
 import type { Message as DbMessage, PrismaClient } from "@prisma/client";
 import type { Conversation, ConversationWithMessages, Message, Role } from "../core/domain/types";
+import { parseStoredOperations, type OperationResult } from "../core/domain/memory";
 import type { ConversationRepository } from "../core/ports";
 
 export class PrismaConversationRepository implements ConversationRepository {
@@ -21,7 +22,12 @@ export class PrismaConversationRepository implements ConversationRepository {
     return row && { ...row, messages: row.messages.map(toMessage) };
   }
 
-  async appendMessage(input: { conversationId: string; role: Role; content: string }): Promise<Message> {
+  async appendMessage(input: {
+    conversationId: string;
+    role: Role;
+    content: string;
+    operations?: OperationResult[];
+  }): Promise<Message> {
     // createdAt is the ordering key. Force it to be strictly increasing within a
     // conversation so two messages written in the same millisecond keep their order.
     return this.db.$transaction(async (tx) => {
@@ -31,7 +37,9 @@ export class PrismaConversationRepository implements ConversationRepository {
         select: { createdAt: true },
       });
       const createdAt = new Date(Math.max(Date.now(), (last?.createdAt.getTime() ?? 0) + 1));
-      return toMessage(await tx.message.create({ data: { ...input, createdAt } }));
+      const { operations, ...fields } = input;
+      const stored = operations && operations.length > 0 ? JSON.stringify(operations) : null;
+      return toMessage(await tx.message.create({ data: { ...fields, operations: stored, createdAt } }));
     });
   }
 
@@ -55,6 +63,7 @@ function toMessage(row: DbMessage): Message {
     conversationId: row.conversationId,
     role: row.role === "assistant" ? "assistant" : "user",
     content: row.content,
+    operations: parseStoredOperations(row.operations),
     createdAt: row.createdAt,
   };
 }

@@ -1,0 +1,24 @@
+.nav {
+  display: flex;
+  gap: 4px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.link {
+  padding: 4px 12px;
+  border-radius: 6px;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.link:hover {
+  background: var(--panel);
+}
+
+.active {
+  color: var(--text);
+  font-weight: 600;
+  background: var(--user-bg);
+}
