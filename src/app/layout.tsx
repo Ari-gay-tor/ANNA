@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { ReminderBanner } from "@/components/ReminderBanner";
 import { TopNav } from "@/components/TopNav";
@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "ANNA",
   description: "A personal assistant that reduces cognitive load.",
 };
+
+// Colors the Edge app window's title bar (same green as --accent and the manifest).
+export const viewport: Viewport = { themeColor: "#2f5d50" };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

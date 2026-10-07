@@ -59,7 +59,7 @@ export const api = {
   deleteMemory: (id: string) => request<{ deleted: true }>(`/api/memories/${encodeURIComponent(id)}`, { method: "DELETE" }),
   listReminders: () => request<{ upcoming: ClientReminder[]; recent: ClientReminder[] }>("/api/reminders"),
   cancelReminder: (id: string) => request<{ reminder: ClientReminder }>(`/api/reminders/${encodeURIComponent(id)}/cancel`, { method: "POST" }),
-  dueReminders: () => request<{ reminders: ClientReminder[] }>("/api/reminders/due"),
+  dueReminders: () => request<{ reminders: ClientReminder[]; serverToasts?: boolean }>("/api/reminders/due"),
   acknowledgeReminder: (id: string) =>
     request<{ reminder: ClientReminder }>(`/api/reminders/${encodeURIComponent(id)}/acknowledge`, { method: "POST" }),
   saveTimezone: (timezone: string) => request<{ timezone: string }>("/api/settings/timezone", json("PUT", { timezone })),

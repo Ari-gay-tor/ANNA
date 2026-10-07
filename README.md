@@ -2,7 +2,11 @@
 
 ANNA is a personal assistant that reduces cognitive load: it asks the smallest useful question, then gives the clearest next step. This is V0, a single-user web app; product intent is in `docs/SPEC.md` and the build plan is in `docs/PLAN.md`.
 
-## Setup
+## Use ANNA as an app (Windows)
+
+Put your Gemini key in `.env` (copy `.env.example`), then double-click **`install-anna.cmd`**. You get an ANNA shortcut on the Desktop and in the Start menu that opens her in her own window, her server starts quietly at every login, and reminders show as Windows notifications even when her window is closed. Update with `update-anna.cmd`, remove with `uninstall-anna.cmd` (your data is kept). Full guide, settings and troubleshooting: [docs/app.md](docs/app.md).
+
+## Setup (developers)
 
 Requires Node 22 or newer.
 
@@ -54,3 +58,5 @@ ANNA_PROVIDER=fake npm run eval               # no model: checks the plumbing on
 ## Layout
 
 `src/core` is pure logic and must not import Next, React, Prisma, or Node's `fs` (enforced by `tests/architecture.test.ts`). `src/data` holds the Prisma repositories, `src/server` the composition root, `src/app` the pages and API routes, and `src/components` the UI.
+
+`scripts/` holds the production launcher (`npm run app:start`) and the Windows install/start/stop scripts (`scripts/windows/`; see docs/app.md). It is not named `app/` because Next.js would then ignore `src/app`.

@@ -1,8 +1,10 @@
 // Fires due reminders while the server is running. Started once from src/instrumentation.ts.
 
 import { fireDueReminders } from "../core/runtime/fire-due-reminders";
+import type { ReminderRepository } from "../core/ports";
 import { getPrisma } from "../data/prisma";
 import { PrismaReminderRepository } from "../data/reminder-repository";
+import { createToastNotifier, type ReminderNotifier } from "./toast-notifier";
 
 export const POLL_INTERVAL_MS = 15_000;
 
@@ -27,10 +29,36 @@ export function createGuardedTick(run: () => Promise<void>, log: Log): () => Pro
   };
 }
 
+export interface ReminderTickDeps {
+  reminders: ReminderRepository;
+  notifier: ReminderNotifier;
+  log: Log;
+  now: Date;
+}
+
+/**
+ * One poll: fire what is due, then tell the notifier about each reminder this call fired (reminders another tick fired are
+ * not repeated). A notifier failure is logged and never stops the other reminders or the poller; the in-page banner still shows.
+ */
+export async function runReminderTick(deps: ReminderTickDeps): Promise<void> {
+  const { reminders, notifier, log, now } = deps;
+  const fired = await fireDueReminders({ reminders, now });
+  if (fired.length > 0) log(`[anna] fired ${fired.length} reminder(s)`);
+  for (const id of fired) {
+    try {
+      const reminder = await reminders.get(id);
+      if (!reminder) continue;
+      await notifier.notify({ id, text: reminder.text, dueAt: reminder.dueAt, timezone: reminder.timezone, missed: reminder.missed });
+    } catch (error) {
+      log(`[anna] desktop notification failed for reminder ${id}: ${error instanceof Error ? error.message : "unknown error"}`);
+    }
+  }
+}
+
 const globalForPoller = globalThis as unknown as { __annaReminderPoller?: boolean };
 
 /** Runs once now, then every 15 s. Calling it again (e.g. after a hot reload) does nothing. */
-export function startReminderPoller(log: Log = (line) => console.log(line)): void {
+export function startReminderPoller(log: Log = (line) => console.log(line), notifier: ReminderNotifier = createToastNotifier({ log })): void {
   if (globalForPoller.__annaReminderPoller) return;
   globalForPoller.__annaReminderPoller = true;
 
@@ -38,10 +66,7 @@ export function startReminderPoller(log: Log = (line) => console.log(line)): voi
   // handlers. If it created the shared services, their error classes would be a different copy from the ones http.ts checks
   // with instanceof, and every route error would turn into a 500. The Prisma client is shared (it lives on globalThis).
   const reminders = new PrismaReminderRepository(getPrisma());
-  const tick = createGuardedTick(async () => {
-    const fired = await fireDueReminders({ reminders, now: new Date() });
-    if (fired.length > 0) log(`[anna] fired ${fired.length} reminder(s)`);
-  }, log);
+  const tick = createGuardedTick(() => runReminderTick({ reminders, notifier, log, now: new Date() }), log);
 
   void tick();
   setInterval(() => void tick(), POLL_INTERVAL_MS).unref?.();

@@ -36,13 +36,18 @@ export function ReminderBanner() {
 
   const refresh = useCallback(async () => {
     let due: ClientReminder[];
+    let serverToasts: boolean;
     try {
-      due = (await api.dueReminders()).reminders;
+      const response = await api.dueReminders();
+      due = response.reminders;
+      serverToasts = response.serverToasts === true;
     } catch {
       return; // The server may be restarting. The next tick tries again.
     }
     setReminders(due);
 
+    // When the server shows its own Windows toast (Slice 6), a second one from the page would be a duplicate.
+    if (serverToasts) return;
     // A desktop notification once per reminder id, and only if the user already granted permission (never asked from here).
     if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
     notified.current ??= loadNotified();

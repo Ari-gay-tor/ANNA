@@ -16,7 +16,7 @@ Product intent lives in `docs/SPEC.md`. This file says what gets built, in what 
 | 3 | Clarification and options | done: reviewed, Ari manual Tests B + C passed 2026-10-07 |
 | 4 | Reminders | done: reviewed; live eval + Ari's Test E and Cancel checks passed 2026-10-07 |
 | 5 | Behavior evals, failure log, acceptance walkthrough | done: first live eval 24/29, fixes re-run; V0 definition of done 27/27 (2026-10-07) |
-| 6 | One-click app on Ari's PC (own window, auto-start at login, Windows reminder toasts) | in progress |
+| 6 | One-click app on Ari's PC (own window, auto-start at login, Windows reminder toasts) | built + reviewed (tested in temp folders); waiting on Ari's real install |
 
 ## Stack (decided)
 

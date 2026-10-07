@@ -10,6 +10,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "app:start": "node scripts/start-server.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "eval": "vitest run --config vitest.eval.config.mts",
