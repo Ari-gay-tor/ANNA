@@ -9,6 +9,7 @@ Product intent lives in `docs/SPEC.md`. This file says what gets built, in what 
 | Slice | What | Status |
 |---|---|---|
 | 1 | Scaffold, chat loop, persistence, provider interface | built + reviewed (criteria 1–4 proven); waiting on Ari's manual check (5) and a live Gemini run |
+| 1b | Gemini timeout fallthrough, OpenAI-compatible provider (local Ollama/LM Studio), provider fallback chain, `docs/providers.md` | built + reviewed (added at Ari's request 2026-10-07); live local-model call untested (no Ollama model installed) |
 | 2 | Memory | not started |
 | 3 | Clarification and options | not started |
 | 4 | Reminders | not started |
@@ -287,3 +288,4 @@ JSON is stored as text and parsed with zod on read. Enum-like fields are strings
 - 2026-10-07: Next 16 works with TypeScript 7, so no TS pin was needed.
 - 2026-10-07: The history window sent to the model always starts on a user turn (leading assistant turns are dropped).
 - 2026-10-07: Invalid model output is retried once. Provider errors (including empty responses) are not retried; the UI shows Retry.
+- 2026-10-07: Slice 1b. Gemini falls through on 503, 504 and timeouts (20 s per model). An OpenAI-compatible provider covers local models. `ANNA_PROVIDER` can list several providers; fallback happens only on UNAVAILABLE/RATE_LIMITED, never on CONFIG.
