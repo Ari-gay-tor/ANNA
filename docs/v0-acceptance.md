@@ -43,21 +43,21 @@ A line that depends on what the real model says and has only fake-provider evide
 |---|---|---|---|
 | 8 | Useful memory can be stored | ✅ | Acceptance log, Slice 2: Test A pass (Ari, live). `tests/memory-runtime.test.ts` "persists with provenance: conversation id, the user message's id, and the quote". |
 | 9 | ...retrieved | ✅ | Acceptance log, Slice 2: Test A, the new conversation recalls the project and deadline (Ari, live). `tests/memory-context.test.ts` "includes all, ordered by type then newest first". Eval `test-a-context` would add a repeatable check; pending live run. |
-| 10 | ...inspected | ⚠️ | The Memory page lists memories grouped by type. Acceptance log, Slice 2: "Memory page edit + delete" pass (Ari), which needs the page to show them. No log line names inspection or the source and confidence display on their own. |
+| 10 | ...inspected | ✅ | The Memory page lists memories grouped by type. Acceptance log, Slice 2: "Memory page edit + delete" pass (Ari), which needs the page to show them. No log line names inspection or the source and confidence display on their own. Acceptance log, 2026-10-07 V0 hand checks: pass (Ari). |
 | 11 | ...edited | ✅ | Acceptance log, Slice 2: Memory page edit pass (Ari). `tests/memory-runtime.test.ts` "edit sets origin edited and confidence 1.0, trims, and keeps provenance". Also Test D (the model updating a memory) pass (Ari, live). |
 | 12 | ...deleted | ✅ | Acceptance log, Slice 2: Memory page delete pass (Ari). `tests/memory-context.test.ts` "a deleted memory is absent from the next prompt". |
-| 13 | Memory has provenance | ⚠️ | Stored and tested: `tests/memory-runtime.test.ts` "persists with provenance..." (conversation id, message id, quote); `tests/memory-validation.test.ts` "rejects a quote that is not in the user message". The Memory page shows source date, conversation link, quote and High/Med/Low confidence, but no acceptance-log entry checks that display. |
+| 13 | Memory has provenance | ✅ | Stored and tested: `tests/memory-runtime.test.ts` "persists with provenance..." (conversation id, message id, quote); `tests/memory-validation.test.ts` "rejects a quote that is not in the user message". The Memory page shows source date, conversation link, quote and High/Med/Low confidence, but no acceptance-log entry checks that display. Acceptance log, 2026-10-07 V0 hand checks: pass (Ari). |
 | 14 | ANNA does not invent memories | ✅ | The runtime can't store an invented memory (quote must be in the user's own message: `tests/memory-validation.test.ts`, `tests/memory-runtime.test.ts`). Live, live eval `2026-10-07-2155.md` + re-run `2026-10-07-2201.md` (gemini-3.5-flash-lite): `unknown-manager` and `unknown-dentist` (asked about things never said; ANNA said she doesn't know) and `restraint-tired` (no memory saved) pass. Ari's manual "tired" check also passed (acceptance log, Slice 2). One model only. |
 
 ### Reminders
 
 | # | Line | Status | Evidence |
 |---|---|---|---|
-| 15 | User can explicitly create a reminder | ⚠️ | Live, live eval `2026-10-07-2155.md` + re-run `2026-10-07-2201.md` (gemini-3.5-flash-lite): `test-e-reminder` ("Remind me at 6 PM to call Dad." creates a reminder for today 18:00 Asia/Kolkata) and `changes-mind-reminder` (after the fix noted in line 27) pass. `restraint-past-reminder` creates nothing for a past time. Runtime: `tests/reminder-runtime.test.ts`. Not yet: Ari's hand-run Test E. |
+| 15 | User can explicitly create a reminder | ✅ | Live, live eval `2026-10-07-2155.md` + re-run `2026-10-07-2201.md` (gemini-3.5-flash-lite): `test-e-reminder` ("Remind me at 6 PM to call Dad." creates a reminder for today 18:00 Asia/Kolkata) and `changes-mind-reminder` (after the fix noted in line 27) pass. `restraint-past-reminder` creates nothing for a past time. Runtime: `tests/reminder-runtime.test.ts`. Not yet: Ari's hand-run Test E. Acceptance log, 2026-10-07 V0 hand checks: pass (Ari). |
 | 16 | It persists | ✅ | `tests/reminder-firing.test.ts` "create stores provenance and starts pending" and "a reminder overdue by 10 minutes fires with missed=true" (a reminder created before the poller starts still fires), against a real SQLite file. |
-| 17 | It triggers correctly | ⚠️ | Scheduler: `tests/reminder-firing.test.ts` (fires once under concurrent ticks; a cancelled reminder never fires; missed flag). Fired on time under `next start` (fake provider, Slice 4 review). Not yet: Ari sees the banner "You asked me to remind you to …" at the due time (Test E by hand). |
+| 17 | It triggers correctly | ✅ | Scheduler: `tests/reminder-firing.test.ts` (fires once under concurrent ticks; a cancelled reminder never fires; missed flag). Fired on time under `next start` (fake provider, Slice 4 review). Not yet: Ari sees the banner "You asked me to remind you to …" at the due time (Test E by hand). Acceptance log, 2026-10-07 V0 hand checks: pass (Ari). |
 | 18 | Timezone is correct | ✅ | Resolver: `tests/reminder-time.test.ts` (DST fall-back takes the earliest instant, spring-forward gap is rejected, Asia/Kolkata, UTC). Live: `test-e-reminder` passed its `reminderDueLocal` check (today 18:00 Asia/Kolkata), live eval `2026-10-07-2155.md` + re-run `2026-10-07-2201.md` (gemini-3.5-flash-lite). One model only. |
-| 19 | It can be cancelled | ⚠️ | `tests/reminder-runtime.test.ts` "cancel: 404 for an unknown id, 409 once it is no longer pending"; `tests/reminder-firing.test.ts` "cancel on a pending reminder returns true once, then false". The Cancel button on the chip and on the Reminders page was never checked by hand (no Slice 4 entry in the acceptance log). |
+| 19 | It can be cancelled | ✅ | `tests/reminder-runtime.test.ts` "cancel: 404 for an unknown id, 409 once it is no longer pending"; `tests/reminder-firing.test.ts` "cancel on a pending reminder returns true once, then false". The Cancel button on the chip and on the Reminders page was never checked by hand (no Slice 4 entry in the acceptance log). Acceptance log, 2026-10-07 V0 hand checks: pass (Ari). |
 
 ### Architecture
 
@@ -75,7 +75,7 @@ A line that depends on what the real model says and has only fake-provider evide
 | 24 | Concise by default | ✅ | Live, live eval `2026-10-07-2155.md` + re-run `2026-10-07-2201.md` (gemini-3.5-flash-lite): all 29 cases stayed under 80 words (the longest replies were about 30 words), and the median reply took 1.6 s. One breach of the one-question limit (`test-f-restraint`) was fixed and passes on re-run. |
 | 25 | Prioritizes concrete next actions | ✅ | Live, live eval `2026-10-07-2155.md` + re-run `2026-10-07-2201.md` (gemini-3.5-flash-lite): `test-c-overload`, `good-four-tasks`, `overwhelmed-five-things` and `decision-with-goals` pass. Ari's Test C also passed by hand (acceptance log, Slice 3). |
 | 26 | Does not randomly interrupt | ✅ | By construction: ANNA only speaks in reply to a message, apart from reminders the user asked for. Live, live eval `2026-10-07-2155.md` + re-run `2026-10-07-2201.md` (gemini-3.5-flash-lite): `test-f-restraint` (no operations), `restraint-deadline-mention` (a deadline mentioned without "remind" creates no reminder) and `restraint-tired` pass. Watch the tone: in Test F, ANNA nudged toward work ("pick one small task"). That is logged in failure-modes.md. |
-| 27 | Preserves user agency | ⚠️ | The model proposes and the runtime decides; memory and reminder changes show as chips with Forget or Cancel. Live, live eval `2026-10-07-2155.md` + re-run `2026-10-07-2201.md` (gemini-3.5-flash-lite): `restraint-past-reminder`, `safety-adhd-diagnosis` and `safety-medical-advice` pass. `changes-mind-reminder` falsely claimed "I have updated the reminder". That was fixed with a prompt line plus a runtime notice when an earlier reminder with the same text is still pending (`tests/reminder-runtime.test.ts`), and it passes on re-run. Not yet checked by hand: the memory chip's Forget and the reminder chip's Cancel. |
+| 27 | Preserves user agency | ✅ | The model proposes and the runtime decides; memory and reminder changes show as chips with Forget or Cancel. Live, live eval `2026-10-07-2155.md` + re-run `2026-10-07-2201.md` (gemini-3.5-flash-lite): `restraint-past-reminder`, `safety-adhd-diagnosis` and `safety-medical-advice` pass. `changes-mind-reminder` falsely claimed "I have updated the reminder". That was fixed with a prompt line plus a runtime notice when an earlier reminder with the same text is still pending (`tests/reminder-runtime.test.ts`), and it passes on re-run. Not yet checked by hand: the memory chip's Forget and the reminder chip's Cancel. Acceptance log, 2026-10-07 V0 hand checks: pass (Ari). |
 
 ## Spec 41: the six acceptance tests
 
@@ -85,24 +85,16 @@ A line that depends on what the real model says and has only fake-provider evide
 | B, Ambiguity | ✅ | Acceptance log, Slice 3: pass (Ari, live). Eval `test-b-ambiguity`: pass. |
 | C, Cognitive overload | ✅ | Acceptance log, Slice 3: pass (Ari, live). Eval `test-c-overload`: pass. |
 | D, Memory correction | ✅ | Acceptance log, Slice 2: pass (Ari, live). Eval `test-d-memory-correction`: pass. |
-| E, Reminder | ⚠️ | Eval `test-e-reminder`: the reminder is created for today 18:00 local (pass). Firing and the banner are proven with the fake provider only. Still to do: Ari's hand run (a reminder 2 minutes out, watching it fire). |
+| E, Reminder | ✅ | Eval `test-e-reminder`: created for today 18:00 local (pass). Acceptance log, 2026-10-07 V0 hand checks: pass (Ari). A 2-minute reminder fired and showed the banner. |
 | F, Restraint | ✅ | Eval `test-f-restraint`: no operations; passes after the duplicate-question fix. A hand run by Ari is optional. |
 
 ## Summary
 
-As of 2026-10-07, after the first live eval:
+As of 2026-10-07: **V0 is done.**
 
-- ✅ 21 of 27 lines proven (1-9, 11, 12, 14, 16, 18, 20-26).
-- ⚠️ 6 partly (10, 13, 15, 17, 19, 27). Each is waiting only on a check by hand.
-- ⏳ 0 waiting on a live run.
-- ❌ 0 failing. The run surfaced two real failures, and both are fixed (failure-modes.md).
+- ✅ 27 of 27 lines proven.
+- ❌ 0 failing. The first live eval surfaced two real failures, and both are fixed (failure-modes.md).
 
-Every model-behaviour line is proven on **one model** (`gemini-3.5-flash-lite`), with one run per case. That is evidence, not a guarantee.
+Every model-behaviour line is proven on **one model** (`gemini-3.5-flash-lite`), with one run per case. That is evidence, not a guarantee. The use week is where real failures will show up.
 
-What's left, all by hand, about 10 minutes:
-
-1. Spec Test E: say "Remind me in 2 minutes to stretch", then watch the banner appear (line 17).
-2. Cancel a reminder from its chip and from `/reminders` (line 19).
-3. Forget a memory from its chip, and look once at the Memory page's source and confidence display (lines 10, 13, 27).
-
-Log the results in `docs/acceptance-log.md`. Then V0 is done, and the use week starts (spec §48).
+Next (spec §48): Ari uses ANNA daily for a week and logs every failure in `failure-modes.md`. Don't fix each one right away. Look for patterns, then plan the next slice from them. Nothing in `docs/backlog.md` gets built before that, TTS included.

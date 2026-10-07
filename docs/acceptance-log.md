@@ -16,3 +16,10 @@ Manual checks Ari runs against the real model. One entry per slice. Failures als
 - Spec Test B (internship → options → "Not sure" narrows it down): **pass** (Ari).
 - Spec Test C (four tasks → one next action, no plan): **pass** (Ari).
 - Buttons vanish after a tap; typing instead works: **pass** (Ari).
+
+## 2026-10-07: Slices 4-5 and V0 close-out
+- Live behavior eval on `gemini-3.5-flash-lite`: 24/29. 2 real failures fixed, 2 checks loosened, re-run 4/5 (`good-stuck-start` logged). See `failure-modes.md`.
+- Spec Test E by hand: "Remind me in 2 minutes to stretch." fired and showed the banner, and Dismiss cleared it: **pass** (Ari).
+- Cancel a reminder from its chip and from `/reminders`: **pass** (Ari).
+- Forget a memory from its chip; the Memory page shows source, quote and confidence: **pass** (Ari).
+- **V0 definition of done: 27/27** (`docs/v0-acceptance.md`).

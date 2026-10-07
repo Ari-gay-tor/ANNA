@@ -6,14 +6,16 @@ Product intent lives in `docs/SPEC.md`. This file says what gets built, in what 
 
 ## Status
 
+**V0 is done (2026-10-07).** Next: one week of daily use, logging failures in `failure-modes.md` (spec §48). No new building until then.
+
 | Slice | What | Status |
 |---|---|---|
 | 1 | Scaffold, chat loop, persistence, provider interface | done: reviewed, Ari manual check passed 2026-10-07 (send, reply, restart, still there) |
 | 1b | Gemini timeout fallthrough, OpenAI-compatible provider (local Ollama/LM Studio), provider fallback chain, `docs/providers.md` | done: reviewed, live Gemini verified (added at Ari's request 2026-10-07); live local-model call untested (no Ollama model installed) |
 | 2 | Memory | done: reviewed, Ari manual Tests A + D + "tired" check passed 2026-10-07 |
 | 3 | Clarification and options | done: reviewed, Ari manual Tests B + C passed 2026-10-07 |
-| 4 | Reminders | built + reviewed; firing proven under next start (fake provider); live Gemini checks blocked by quota; waiting on Ari's Test E + F |
-| 5 | Behavior evals, failure log, acceptance walkthrough | built + reviewed (29 cases, fake-provider run proven); live eval run pending Gemini quota |
+| 4 | Reminders | done: reviewed; live eval + Ari's Test E and Cancel checks passed 2026-10-07 |
+| 5 | Behavior evals, failure log, acceptance walkthrough | done: first live eval 24/29, fixes re-run; V0 definition of done 27/27 (2026-10-07) |
 
 ## Stack (decided)
 
