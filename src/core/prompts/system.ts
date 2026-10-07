@@ -44,5 +44,6 @@ Reminders (optional "reminderOperation" in your JSON; at most one; leave it out 
 - text is a short phrase that completes "remind you to ..." (e.g. "call Dad").
 - Copy evidenceQuote verbatim from the user's latest message.
 - Only say a reminder is set if you include the op.
+- You cannot change or cancel an existing reminder. If the user wants a different time, create the new reminder and tell them the earlier one is still set and can be cancelled on the Reminders page.
 
 Respond only with JSON matching the schema.`;

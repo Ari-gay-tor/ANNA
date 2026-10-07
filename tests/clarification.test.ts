@@ -93,20 +93,41 @@ describe("composeClarificationContent", () => {
     expect(composeClarificationContent("", "What are you stuck on?")).toBe("What are you stuck on?");
   });
 
-  it("does not repeat the question when the message already contains it", () => {
+  it("removes a question sentence from the message, so the question appears once", () => {
     const message = "Internships can mean a lot. What are you stuck on?";
-    expect(composeClarificationContent(message, "What are you stuck on?")).toBe(message);
-  });
-
-  it("matches ignoring case, punctuation and spacing", () => {
-    const message = "Okay.  what ARE you   stuck on";
-    expect(composeClarificationContent(message, "What are you stuck on?")).toBe(message);
-  });
-
-  it("appends the question when the message only partly overlaps it", () => {
-    expect(composeClarificationContent("What are you doing?", "What are you stuck on?")).toBe(
-      "What are you doing?\n\nWhat are you stuck on?",
+    expect(composeClarificationContent(message, "What are you stuck on?")).toBe(
+      "Internships can mean a lot.\n\nWhat are you stuck on?",
     );
+  });
+
+  it("removes a reworded question from the message (live test-f-restraint reply)", () => {
+    const content = composeClarificationContent(
+      "What kind of thing are you trying to tackle right now?",
+      "What kind of task are you trying to tackle?",
+    );
+    expect(content).toBe("What kind of task are you trying to tackle?");
+    expect(content.match(/\?/g)).toHaveLength(1);
+  });
+
+  it("keeps a statement and drops the question in the same message", () => {
+    expect(composeClarificationContent("That sounds like a lot. What matters most today?", "Which one is due first?")).toBe(
+      "That sounds like a lot.\n\nWhich one is due first?",
+    );
+  });
+
+  it("keeps several statements and drops every question sentence", () => {
+    expect(composeClarificationContent("Okay! Is it urgent? Let's narrow it down. Or not?", "Which one is due first?")).toBe(
+      "Okay! Let's narrow it down.\n\nWhich one is due first?",
+    );
+  });
+
+  it("gives the question alone when the message is only a question", () => {
+    expect(composeClarificationContent("What are you doing?", "What are you stuck on?")).toBe("What are you stuck on?");
+  });
+
+  it("leaves a message with no question unchanged", () => {
+    const message = "Okay.  Internships have\na few moving parts!";
+    expect(composeClarificationContent(message, "What are you stuck on?")).toBe(`${message}\n\nWhat are you stuck on?`);
   });
 });
 

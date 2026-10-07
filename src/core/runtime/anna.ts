@@ -115,11 +115,18 @@ export function createAnna(deps: AnnaDeps): Anna {
       } else if (parsed.droppedReminder) {
         reminderDecision = { status: "rejected", reason: REASON_REMINDER_MALFORMED };
       }
-      const reminderOutcome = reminderDecision
-        ? await executeReminderDecision({ decision: reminderDecision, reminders, source: { conversationId, messageId: latest.id }, log })
-        : { results: [], notices: [] };
       clarification = parsed.clarification;
       const text = clarification ? composeClarificationContent(parsed.message, clarification.question) : parsed.message;
+      const reminderOutcome = reminderDecision
+        ? await executeReminderDecision({
+            decision: reminderDecision,
+            reminders,
+            source: { conversationId, messageId: latest.id },
+            log,
+            now: clock(),
+            modelText: text,
+          })
+        : { results: [], notices: [] };
       content = [text, ...outcome.notices, ...reminderOutcome.notices].join("\n");
       operations = [...outcome.results, ...reminderOutcome.results];
     }

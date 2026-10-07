@@ -49,18 +49,23 @@ export function normalizeClarification(raw: ClarificationProposal): Clarificatio
   return { question, options: [...options.slice(0, MAX_CLARIFICATION_OPTIONS), NOT_SURE_LABEL] };
 }
 
-/** Lowercase, punctuation and spacing flattened, so "What are you stuck on?" matches "what are you stuck on". */
-function flatten(text: string): string {
-  return text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+/** Splits on ".", "!" or "?" followed by whitespace or the end, keeping the punctuation with its sentence. */
+function splitSentences(text: string): string[] {
+  return text.match(/.*?[.!?]+(?=\s|$)|.+$/gs)?.map((s) => s.trim()).filter(Boolean) ?? [];
 }
 
-/** The assistant text shown and stored: the message, then the question after a blank line unless the message already says it. */
+/**
+ * The assistant text shown and stored when a clarification is present. The clarification carries the question, so
+ * every sentence ending in "?" is removed from the message (the model sometimes rephrases the question there, and
+ * exact-match dedupe misses that). What remains, if anything, leads; then the question after a blank line.
+ * A message with no question sentence is kept exactly as written.
+ */
 export function composeClarificationContent(message: string, question: string): string {
-  const lead = message.trim();
-  if (!lead) return question;
-  const flatQuestion = flatten(question);
-  if (flatQuestion && flatten(lead).includes(flatQuestion)) return lead;
-  return `${lead}\n\n${question}`;
+  const trimmed = message.trim();
+  const sentences = splitSentences(trimmed);
+  const kept = sentences.filter((sentence) => !/\?[!?.]*$/.test(sentence));
+  const lead = kept.length === sentences.length ? trimmed : kept.join(" ");
+  return lead ? `${lead}\n\n${question}` : question;
 }
 
 /** Maps stored messages to what the model sees. Stored content is never changed; only this request copy is annotated. */

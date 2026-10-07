@@ -220,6 +220,8 @@ describe("prompt", () => {
     expect(SYSTEM_PROMPT).toMatch(/next occurrence/);
     expect(SYSTEM_PROMPT).toMatch(/clarification instead of guessing/);
     expect(SYSTEM_PROMPT).toMatch(/Only say a reminder is set if you include the op/);
+    expect(SYSTEM_PROMPT).toMatch(/cannot change or cancel an existing reminder/);
+    expect(SYSTEM_PROMPT).toMatch(/earlier one is still set and can be cancelled on the Reminders page/);
   });
 
   it("the request sent to the provider carries the schema with reminderOperation and the local time", async () => {
@@ -316,5 +318,102 @@ describe("reminder service", () => {
     const { upcoming, recent } = await t.reminderService.list();
     expect(upcoming.map((r) => r.id)).toEqual([sooner.id, later.id]);
     expect(recent.map((r) => r.id)).toEqual([cancelled.id, firedRecent.id]); // newest first; the 9-day-old one is out
+  });
+});
+
+describe("still-set notice for earlier reminders with the same text", () => {
+  const THREE_PM = "Remind me at 3 PM to email Priya.";
+  const FIVE_PM = "Actually make it 5 PM instead. Remind me at 5 PM to email Priya.";
+  const op = (hhmm: string, overrides: Record<string, unknown> = {}) => ({
+    text: "email Priya",
+    evidenceQuote: "Remind me at 5 PM to email Priya",
+    localDateTime: `2026-10-07T${hhmm}`,
+    ...overrides,
+  });
+  const NOTICE_3PM =
+    "(Your earlier reminder to email Priya at Today 3:00 PM is still set. Cancel it on the Reminders page if you don't need it.)";
+
+  /** Creates the 3 PM reminder through the runtime, as in the live run. */
+  async function withThreePm() {
+    const t = await setupWithZone();
+    t.provider.enqueue(replyWithReminder("Okay.", op("15:00", { evidenceQuote: "Remind me at 3 PM to email Priya" })));
+    const first = await t.anna.handleMessage({ text: THREE_PM });
+    expect(first.assistantMessage.content).toBe("Okay."); // nothing earlier, so no notice
+    return t;
+  }
+
+  it("a second reminder with the same text adds the notice and leaves the first pending", async () => {
+    const t = await withThreePm();
+    t.provider.enqueue(replyWithReminder("I have updated the reminder to 5 PM.", op("17:00")));
+    const { assistantMessage } = await t.anna.handleMessage({ text: FIVE_PM });
+
+    expect(assistantMessage.content).toBe(`I have updated the reminder to 5 PM.\n${NOTICE_3PM}`);
+    const rows = await t.db.reminder.findMany({ orderBy: { dueAt: "asc" } });
+    expect(rows.map((r) => [r.dueAt.toISOString(), r.status])).toEqual([
+      ["2026-10-07T19:00:00.000Z", "pending"],
+      ["2026-10-07T21:00:00.000Z", "pending"],
+    ]);
+    expect(assistantMessage.operations).toHaveLength(1); // the notice is text only, not a new operation
+  });
+
+  it("matches ignoring case and punctuation, and reminders from another conversation", async () => {
+    const t = await withThreePm();
+    t.provider.enqueue(replyWithReminder("Done.", op("17:00", { text: "Email Priya." })));
+    const { assistantMessage } = await t.anna.handleMessage({ text: FIVE_PM }); // new conversation
+    expect(assistantMessage.content).toBe(`Done.\n${NOTICE_3PM}`);
+  });
+
+  it("a different text adds no notice", async () => {
+    const t = await withThreePm();
+    t.provider.enqueue(replyWithReminder("Okay.", op("17:00", { text: "call Dad", evidenceQuote: "Remind me at 5 PM to call Dad" })));
+    const { assistantMessage } = await t.anna.handleMessage({ text: "Remind me at 5 PM to call Dad." });
+    expect(assistantMessage.content).toBe("Okay.");
+  });
+
+  it("a cancelled or fired earlier reminder with the same text adds no notice", async () => {
+    const t = await setupWithZone();
+    const base = { text: "email Priya", timezone: "America/New_York", sourceConversationId: null, sourceMessageId: null };
+    const cancelled = await t.reminders.create({ ...base, dueAt: new Date("2026-10-07T19:00:00Z") });
+    await t.reminders.cancel(cancelled.id);
+    const fired = await t.reminders.create({ ...base, dueAt: new Date("2026-10-07T15:00:00Z") });
+    await t.reminders.markFired(fired.id, FIXED_NOW, false);
+
+    t.provider.enqueue(replyWithReminder("Okay.", op("17:00")));
+    const { assistantMessage } = await t.anna.handleMessage({ text: FIVE_PM });
+    expect(assistantMessage.content).toBe("Okay.");
+  });
+
+  it("adds no notice when the model's message already says it is still set or mentions the Reminders page", async () => {
+    for (const message of ["Your 3 PM one is STILL SET.", "Cancel the old one on the Reminders Page."]) {
+      const t = await withThreePm();
+      t.provider.enqueue(replyWithReminder(message, op("17:00")));
+      const { assistantMessage } = await t.anna.handleMessage({ text: FIVE_PM });
+      expect(assistantMessage.content).toBe(message);
+      await t.db.$disconnect();
+    }
+  });
+
+  it("adds at most 2 notices, one line each, soonest first, formatted in each reminder's own timezone", async () => {
+    const t = await setupWithZone();
+    const base = { text: "email Priya", sourceConversationId: null, sourceMessageId: null };
+    await t.reminders.create({ ...base, dueAt: new Date("2026-10-07T21:00:00Z"), timezone: "America/New_York" }); // 5:00 PM
+    await t.reminders.create({ ...base, dueAt: new Date("2026-10-07T19:00:00Z"), timezone: "America/New_York" }); // 3:00 PM
+    await t.reminders.create({ ...base, dueAt: new Date("2026-10-08T19:30:00Z"), timezone: "Asia/Kolkata" }); // third, cut
+
+    t.provider.enqueue(replyWithReminder("Okay.", op("18:00")));
+    const { assistantMessage } = await t.anna.handleMessage({ text: FIVE_PM });
+    expect(assistantMessage.content.split("\n")).toEqual([
+      "Okay.",
+      "(Your earlier reminder to email Priya at Today 3:00 PM is still set. Cancel it on the Reminders page if you don't need it.)",
+      "(Your earlier reminder to email Priya at Today 5:00 PM is still set. Cancel it on the Reminders page if you don't need it.)",
+    ]);
+  });
+
+  it("a rejected reminder adds no notice", async () => {
+    const t = await withThreePm();
+    t.provider.enqueue(replyWithReminder("Okay.", op("17:00", { evidenceQuote: "something the user never said" })));
+    const { assistantMessage } = await t.anna.handleMessage({ text: FIVE_PM });
+    expect(assistantMessage.content).not.toContain("still set");
+    expect(await t.db.reminder.count()).toBe(1);
   });
 });

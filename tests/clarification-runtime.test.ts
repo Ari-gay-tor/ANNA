@@ -36,11 +36,11 @@ describe("storing a reply with a clarification", () => {
     expect(assistantMessage.content).toBe(QUESTION);
   });
 
-  it("does not show the question twice when the message already contains it", async () => {
+  it("does not show the question twice when the message already contains it (the message copy is removed)", async () => {
     const t = setup();
     t.provider.enqueue(replyWithClarification(`Okay. ${QUESTION}`, clarification()));
     const { assistantMessage } = await t.anna.handleMessage({ text: "internship" });
-    expect(assistantMessage.content).toBe(`Okay. ${QUESTION}`);
+    expect(assistantMessage.content).toBe(`Okay.\n\n${QUESTION}`);
     expect(assistantMessage.content.match(/stuck on/g)).toHaveLength(1);
   });
 
@@ -242,5 +242,20 @@ describe("fake provider canned mode", () => {
 
     const plain = await t.anna.handleMessage({ text: "hello" });
     expect(plain.assistantMessage.clarification).toBeNull();
+  });
+});
+
+describe("a reworded question in the message", () => {
+  it("shows one question when the message asks a different version of it (live test-f-restraint reply)", async () => {
+    const t = setup();
+    t.provider.enqueue(
+      replyWithClarification(
+        "What kind of thing are you trying to tackle right now?",
+        clarification({ question: "What kind of task are you trying to tackle?" }),
+      ),
+    );
+    const { assistantMessage } = await t.anna.handleMessage({ text: "I have so much to do." });
+    expect(assistantMessage.content).toBe("What kind of task are you trying to tackle?");
+    expect(assistantMessage.content.match(/\?/g)).toHaveLength(1);
   });
 });

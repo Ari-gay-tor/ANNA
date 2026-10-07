@@ -141,7 +141,7 @@
     "checks": {
       "expectClarification": false,
       "expectOps": ["memory.created"],
-      "requireAny": ["remember", "got it", "noted"]
+      "requireAny": ["remember", "got it", "noted", "keep that in mind", "will keep"]
     }
   },
   {
@@ -252,7 +252,7 @@
     "checks": {
       "expectClarification": "either",
       "forbidOps": ["memory.created", "reminder.created"],
-      "requireAny": ["coordinat", "underestimat", "longer than", "more time", "buffer"]
+      "requireAny": ["coordinat", "underestimat", "longer than", "more time", "buffer", "extra time", "allow"]
     }
   },
   {
