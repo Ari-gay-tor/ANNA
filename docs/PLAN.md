@@ -289,3 +289,4 @@ JSON is stored as text and parsed with zod on read. Enum-like fields are strings
 - 2026-10-07: The history window sent to the model always starts on a user turn (leading assistant turns are dropped).
 - 2026-10-07: Invalid model output is retried once. Provider errors (including empty responses) are not retried; the UI shows Retry.
 - 2026-10-07: Slice 1b. Gemini falls through on 503, 504 and timeouts (20 s per model). An OpenAI-compatible provider covers local models. `ANNA_PROVIDER` can list several providers; fallback happens only on UNAVAILABLE/RATE_LIMITED, never on CONFIG.
+- 2026-10-07: Gemini free-tier limits are per model (gemini-3.5-flash: 20 requests/day). A 429 now moves on to the next model in the chain (no billing on the key, so this costs nothing); the same model is still never retried. This supersedes the earlier "429 = stop" rule.

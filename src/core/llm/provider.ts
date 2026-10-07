@@ -33,7 +33,7 @@ export interface LLMProvider {
 export type LLMErrorKind =
   /** Provider down, overloaded, timed out, or rejected the request. */
   | "UNAVAILABLE"
-  /** Quota or rate limit hit (HTTP 429). Never retried. */
+  /** Quota or rate limit hit (HTTP 429). The same model is never retried; Gemini moves on to its next model. */
   | "RATE_LIMITED"
   /** Provider refused the content. */
   | "BLOCKED"

@@ -17,7 +17,7 @@ For development you can use `npm run db:migrate` instead of `db:deploy`; it also
 
 ### Providers
 
-- **Gemini (default).** Put your key in `.env` as `GEMINI_API_KEY`. Models and the fallback chain (503, 504 or timeout moves to the next model) are set by `GEMINI_MODEL`, `GEMINI_FALLBACK_MODELS` and `GEMINI_TIMEOUT_MS`. Use a key from a Google project without billing, so quota exhaustion can only fail, never charge. If the key is missing, the UI shows a clear error instead of crashing.
+- **Gemini (default).** Put your key in `.env` as `GEMINI_API_KEY`. Models and the fallback chain (429 quota, 503, 504 or timeout moves to the next model; free-tier limits are per model, so more models means more free replies per day) are set by `GEMINI_MODEL`, `GEMINI_FALLBACK_MODELS` and `GEMINI_TIMEOUT_MS`. Use a key from a Google project without billing, so quota exhaustion can only fail, never charge. If the key is missing, the UI shows a clear error instead of crashing.
 - **Local or other OpenAI-compatible model** (Ollama, LM Studio, OpenRouter, Groq): `ANNA_PROVIDER=openai-compatible` plus `OPENAI_COMPAT_BASE_URL` and `OPENAI_COMPAT_MODEL`.
 - **Several, with fallback:** `ANNA_PROVIDER=gemini,openai-compatible` uses the next one only when the previous is unavailable or out of quota.
 - **No key needed.** Set `ANNA_PROVIDER=fake` in `.env` and restart. ANNA then answers with a canned echo reply, which is enough to work on the UI and the conversation flow offline.

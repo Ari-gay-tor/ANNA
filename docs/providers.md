@@ -30,9 +30,11 @@ GEMINI_TIMEOUT_MS=20000
 - `GEMINI_FALLBACK_MODELS`: comma-separated, tried in order, each at most once. Leave it empty (`GEMINI_FALLBACK_MODELS=`) to turn fallbacks off.
 - `GEMINI_TIMEOUT_MS`: how long to wait for **each** model before giving up on it. Default 20000 (20 s).
 
-What moves on to the next model: HTTP **503** (overloaded), HTTP **504** (Google's own deadline), and **no answer within the timeout**.
+What moves on to the next model: HTTP **429** (quota or rate limit hit), HTTP **503** (overloaded), HTTP **504** (Google's own deadline), and **no answer within the timeout**. The same model is never tried twice in one reply.
 
-What never does: **429** (quota or rate limit). That stops right away and shows "quota reached". Retrying would only burn more quota.
+**Free-tier limits are per model.** One model running out does not affect the others, and some are small (as low as 20 requests per day). So a longer fallback list means more free replies per day: each model you add brings its own allowance. The key has no billing, so trying another model can only fail, never charge.
+
+If every model in the list is out, the error shows the limit of the last one tried, for example: `Gemini free quota used up for gemini-3.5-flash-lite (20 requests per day). Resets in about 7 h.` (If Google's reply doesn't say which limit it was, you get the plain "quota or rate limit reached" text.)
 
 Worst case a reply waits `timeout x number of models` (3 x 20 s by default) before it fails. If the first model is overloaded for a while, every chat pays one timeout. Put the model that works at the front (`GEMINI_MODEL=gemini-3.5-flash`) to skip the wait.
 
@@ -127,7 +129,7 @@ The terminal running `npm run dev` prints one line per model call (never the mes
 ## 7. Troubleshooting
 
 - **"GEMINI_API_KEY is not set" / "rejected the API key" (CONFIG):** check `.env` for the key line (no quotes or spaces around it), then restart. Same idea for any `OPENAI_COMPAT_*` message: it names the variable that's wrong.
-- **"quota or rate limit reached" (RATE_LIMITED):** the free daily quota is used up (remember Wallflower shares it). Wait for the reset, use your own key (section 3), or add a local backup (section 5).
+- **"Gemini free quota used up for ..." / "quota or rate limit reached" (RATE_LIMITED):** every model in your list has hit its free limit (limits are per model, and remember Wallflower shares the key). The message says which limit the last model hit and roughly when it resets. Add more models to `GEMINI_FALLBACK_MODELS` for more free replies per day (section 2), wait for the reset, use your own key (section 3), or add a local backup (section 5).
 - **"Couldn't reach http://localhost:11434/v1. Is Ollama running?":** start Ollama. A model must also be downloaded: if you see "model ... not found", run the `ollama pull` command from the message.
 - **Replies take 20+ seconds:** a model in the chain is overloaded and is timing out before the next one answers. Check the log line to see which model finally replied, then put that one first in `GEMINI_MODEL`. Slow local model: raise `OPENAI_COMPAT_TIMEOUT_MS`.
 - **Any error in the chat window:** your message is already saved. Press **Retry**; nothing is duplicated.
