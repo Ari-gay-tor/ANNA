@@ -12,6 +12,10 @@ Read `docs/PLAN.md` first. Read `docs/SPEC.md` for product intent. Build only th
 6. **Never print or log API keys.** `.env` and `.env.local` are gitignored.
 7. **Prove it.** Your report must include the real output of `npm run typecheck`, `npm test`, and (Slice 1+) `npm run build`. If something fails, say so plainly. Don't call it done.
 
+## `ANNA-tts/`
+
+This is Ari's Kokoro text-to-speech prototype, written in Python. It is not part of V0 and is not wired into the app. Don't modify it or integrate it unless the slice brief says to (see `docs/backlog.md`). The Node build, typecheck and tests ignore it.
+
 ## Style
 
 - Small files, plain functions, descriptive names. Comments only where the why isn't obvious.

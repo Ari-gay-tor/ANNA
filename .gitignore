@@ -8,3 +8,6 @@ prisma/*.db*
 evals/reports/
 *.tsbuildinfo
 next-env.d.ts
+.venv/
+__pycache__/
+*.pyc
