@@ -12,3 +12,4 @@ Nothing here gets built until V0 is done (`docs/PLAN.md` Slice 5) and a week of 
 | Inferred pattern memories | Rejected in V0. They need evidence across conversations, which needs retrieval of past messages. | Real use shows recurring patterns that ANNA misses |
 | Model-initiated "forget" | V0 deletes only from the Memory page. | Ari keeps asking ANNA in chat to forget things |
 | Streaming replies | V0 doesn't stream because the output is structured JSON. | Reply latency is a top complaint |
+| Scrub API key from non-quota Gemini errors | `toLLMError` in `src/core/llm/gemini.ts` copies raw upstream text into `Gemini API error (...)` / `Gemini request failed` messages. Google is not known to echo keys, but redact the key and cap the text (as `openai-compatible.ts` does). Small. | Next time the Gemini adapter is touched |
