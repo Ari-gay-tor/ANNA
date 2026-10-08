@@ -18,10 +18,12 @@
   transition: border-color var(--t-fast) ease;
 }
 
+/* One focused border with a soft halo, not a second outline around the box. */
 .box:focus-within {
-  border-color: var(--accent);
-  outline: 2px solid var(--focus);
-  outline-offset: 1px;
+  border-color: var(--focus);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--focus) 22%, transparent),
+    var(--shadow-float);
 }
 
 .input {
@@ -37,6 +39,12 @@
   color: var(--ink);
   font-size: 16px;
   line-height: 24px;
+}
+
+/* The box above shows focus; the global :focus-visible ring must not draw a second one here. */
+.input:focus,
+.input:focus-visible {
+  outline: none;
 }
 
 .input::placeholder {
