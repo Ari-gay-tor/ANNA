@@ -87,6 +87,27 @@
   }
 }
 
+.metaWrap {
+  flex-wrap: wrap;
+}
+
+/* The "Not helpful" flag is quiet: it shows on hover or focus, and always on touch screens. Same rule as the time. */
+.reveal {
+  opacity: 0;
+}
+
+.row:hover .reveal,
+.row:focus-within .reveal,
+.reveal[aria-expanded="true"] {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .reveal {
+    opacity: 1;
+  }
+}
+
 .tag {
   padding: 0 var(--s-2);
   border: 1px solid var(--border-strong);

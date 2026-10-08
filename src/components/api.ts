@@ -1,4 +1,4 @@
-import type { ClientConversation, ClientMemory, ClientMessage, ClientReminder } from "./types";
+import type { ClientConversation, ClientFeedback, ClientMemory, ClientMessage, ClientReminder, KeySaved, KeyStatus } from "./types";
 
 /** A failed API call. When the server saved the user's message before failing, it is attached. */
 export class ApiFailure extends Error {
@@ -67,4 +67,11 @@ export const api = {
   acknowledgeReminder: (id: string) =>
     request<{ reminder: ClientReminder }>(`/api/reminders/${encodeURIComponent(id)}/acknowledge`, { method: "POST" }),
   saveTimezone: (timezone: string) => request<{ timezone: string }>("/api/settings/timezone", json("PUT", { timezone })),
+  keyStatus: () => request<KeyStatus>("/api/settings/key"),
+  /** Checks the key with Google and saves it. The key goes in the request body, never in the URL. */
+  saveKey: (key: string) => request<KeySaved>("/api/settings/key", json("PUT", { key })),
+  flagMessage: (messageId: string, note: string) =>
+    request<{ feedback: { id: string }; created: boolean }>("/api/feedback", json("POST", { messageId, note: note || undefined })),
+  listFeedback: () => request<{ items: ClientFeedback[]; version: string }>("/api/feedback"),
+  deleteFeedback: (id: string) => request<{ deleted: true }>(`/api/feedback/${encodeURIComponent(id)}`, { method: "DELETE" }),
 };

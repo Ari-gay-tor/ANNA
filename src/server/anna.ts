@@ -5,6 +5,7 @@ import { createAnna, type Anna } from "../core/runtime/anna";
 import { createMemoryService, type MemoryService } from "../core/runtime/memory-service";
 import { createReminderService, type ReminderService } from "../core/runtime/reminder-service";
 import { PrismaConversationRepository, type ManagedConversationRepository } from "../data/conversation-repository";
+import { PrismaFeedbackRepository, type FeedbackRepository } from "../data/feedback-repository";
 import { PrismaMemoryRepository } from "../data/memory-repository";
 import { getPrisma } from "../data/prisma";
 import { PrismaReminderRepository } from "../data/reminder-repository";
@@ -19,6 +20,7 @@ export interface Services {
   memoryService: MemoryService;
   reminders: ReminderRepository;
   reminderService: ReminderService;
+  feedback: FeedbackRepository;
 }
 
 const log = (line: string) => console.log(line);
@@ -44,7 +46,16 @@ export function getServices(): Services {
       memoryService: createMemoryService(memories),
       reminders,
       reminderService: createReminderService(reminders, clock),
+      feedback: new PrismaFeedbackRepository(db),
     };
   }
   return globalForServices.__annaServices;
+}
+
+/**
+ * Forgets the cached services, so the next getServices() reads the environment again. Used after a new API key is saved,
+ * so it takes effect without a restart. The Prisma client is kept: it does not depend on the key.
+ */
+export function resetServices(): void {
+  delete globalForServices.__annaServices;
 }

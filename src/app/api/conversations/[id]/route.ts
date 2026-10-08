@@ -51,8 +51,22 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     // Chips need to know whether the memory they point at has since been forgotten, and where each reminder stands.
     const existingIds = new Set((await getServices().memories.list()).map((m) => m.id));
     const reminderStatuses = await getServices().reminderService.statuses(reminderIdsIn(messages));
-    return Response.json({ conversation: rest, messages: annotateOperations(messages, existingIds, reminderStatuses) });
+    const flagged = await flaggedIds(messages.map((m) => m.id));
+    return Response.json({
+      conversation: rest,
+      messages: annotateOperations(messages, existingIds, reminderStatuses).map((m) => ({ ...m, flagged: flagged.has(m.id) })),
+    });
   } catch (error) {
     return errorResponse(error);
+  }
+}
+
+/** Which messages are flagged "not helpful". Opening a conversation must never fail because of it (e.g. a database that has not had the Slice 8 migration yet). */
+async function flaggedIds(messageIds: string[]): Promise<ReadonlySet<string>> {
+  try {
+    return await getServices().feedback.flaggedMessageIds(messageIds);
+  } catch (error) {
+    console.error("[anna] could not read feedback flags:", error instanceof Error ? error.message : "unknown error");
+    return new Set();
   }
 }

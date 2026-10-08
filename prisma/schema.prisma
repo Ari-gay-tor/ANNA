@@ -1,4 +1,4 @@
-// ANNA V0 schema (Slices 1-4; see docs/PLAN.md for the final shape).
+// ANNA V0 schema (Slices 1-4 and 8; see docs/PLAN.md for the final shape).
 // Enum-like fields are plain strings validated in src/core/domain.
 
 generator client {
@@ -64,4 +64,21 @@ model Reminder {
   createdAt            DateTime  @default(now())
 
   @@index([status, dueAt])
+}
+
+// "Not helpful" flags (Slice 8). No relation to Message or Conversation on purpose: the text is snapshotted here,
+// so a flag still exports after its conversation is deleted.
+model Feedback {
+  id             String   @id @default(cuid())
+  messageId      String
+  conversationId String
+  note           String   @default("") // what the user needed instead; empty when they wrote nothing
+  replyText      String // snapshot of the flagged ANNA reply
+  userText       String   @default("") // snapshot of the user message right before it
+  contextJson    String   @default("[]") // JSON text: up to 2 messages before the reply [{role, content}], oldest first
+  operations     String? // JSON text: snapshot of the reply's operation results
+  createdAt      DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([messageId])
 }

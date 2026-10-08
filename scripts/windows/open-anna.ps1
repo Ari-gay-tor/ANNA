@@ -1,8 +1,12 @@
 # What the ANNA shortcut runs: make sure the server is up, then open ANNA in her own Edge window (no tabs, no address bar).
 # If that window is already open it is brought to the front instead of opening a second one.
 # Falls back to the default browser if Edge is not installed.
-param([switch]$NoDialog)
+param(
+    [switch]$NoDialog,
+    [string]$DataDir
+)
 . "$PSScriptRoot\common.ps1"
+Set-AnnaDataDirOverride $DataDir
 
 # Finds an open ANNA app window: a visible Edge window whose title is exactly "ANNA" (a normal tab's window title ends with
 # "- Microsoft Edge", so it never matches), restores it if minimized and brings it forward. Returns $true if one was found.
@@ -49,7 +53,7 @@ if ($code -ne 0) {
     # The shortcut has no console, so say it in a dialog or the click would look like nothing happened.
     if (-not $NoDialog) {
         Add-Type -AssemblyName System.Windows.Forms
-        [void][System.Windows.Forms.MessageBox]::Show("ANNA could not start (code $code).`n`nSee logs\anna.log in the ANNA folder:`n$script:AnnaRoot", 'ANNA', 'OK', 'Warning')
+        [void][System.Windows.Forms.MessageBox]::Show("ANNA could not start (code $code).`n`nSee the log:`n$((Get-AnnaMode).LogFile)", 'ANNA', 'OK', 'Warning')
     }
     exit $code
 }

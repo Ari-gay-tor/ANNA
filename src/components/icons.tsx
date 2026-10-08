@@ -117,3 +117,42 @@ export const IconMenu = (p: IconProps) => (
     <path d="M4 7h16M4 12h16M4 17h16" />
   </Svg>
 );
+
+export const IconFlag = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M5 21V4" />
+    <path d="M5 4h11l-2 4 2 4H5" />
+  </Svg>
+);
+
+export const IconGear = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="3" />
+    <path d="M12 2.5v2.6M12 18.9v2.6M4.4 4.4l1.8 1.8M17.8 17.8l1.8 1.8M2.5 12h2.6M18.9 12h2.6M4.4 19.6l1.8-1.8M17.8 6.2l1.8-1.8" />
+    <circle cx="12" cy="12" r="6.6" />
+  </Svg>
+);
+
+export const IconEye = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z" />
+    <circle cx="12" cy="12" r="2.8" />
+  </Svg>
+);
+
+export const IconEyeOff = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M3 3l18 18" />
+    <path d="M10.6 5.7A10 10 0 0 1 12 5.5c6.4 0 10 6.5 10 6.5a17 17 0 0 1-3.2 3.9" />
+    <path d="M6.2 7.3A16.6 16.6 0 0 0 2 12s3.6 6.5 10 6.5a9.6 9.6 0 0 0 4-.9" />
+    <path d="M9.9 9.9a2.8 2.8 0 0 0 4.2 3.7" />
+  </Svg>
+);
+
+export const IconDownload = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M12 4v11" />
+    <path d="m7 11 5 5 5-5" />
+    <path d="M5 20h14" />
+  </Svg>
+);

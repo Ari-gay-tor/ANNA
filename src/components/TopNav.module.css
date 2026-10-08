@@ -11,11 +11,20 @@
 
 .nav {
   display: flex;
+  flex: 1 1 auto;
   gap: var(--s-1);
   min-width: 0;
+  /* On a very narrow screen the links scroll sideways instead of running under the settings and theme buttons. */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nav::-webkit-scrollbar {
+  display: none;
 }
 
 .link {
+  flex: none;
   padding: 6px var(--s-3);
   border-radius: var(--r-sm);
   color: var(--muted);
@@ -35,6 +44,31 @@
 .active,
 .active:hover {
   background: var(--accent-soft);
+  color: var(--ink);
+}
+
+.tools {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.gear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  color: var(--muted);
+  transition:
+    background-color var(--t-fast) ease,
+    color var(--t-fast) ease;
+}
+
+.gear:hover {
+  background: var(--hover);
   color: var(--ink);
 }
 

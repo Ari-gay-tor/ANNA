@@ -21,6 +21,8 @@ export interface ClientMessage {
   clarification?: Clarification | null;
   /** True when a user message was sent by tapping an option. */
   selectedOption?: boolean;
+  /** True when the user flagged this reply as "Not helpful". Absent on a reply that was just generated. */
+  flagged?: boolean;
   createdAt: string;
 }
 
@@ -59,4 +61,36 @@ export interface ClientReminder {
   sourceConversationId: string | null;
   sourceMessageId: string | null;
   createdAt: string;
+}
+
+/** A flagged ANNA reply as the Feedback page lists it. */
+export interface ClientFeedback {
+  id: string;
+  messageId: string;
+  conversationId: string;
+  /** Whether the conversation still exists. The text below was captured when the reply was flagged, so it is shown either way. */
+  conversationExists: boolean;
+  note: string;
+  replyText: string;
+  userText: string;
+  createdAt: string;
+}
+
+/** GET /api/settings/key: never the key itself, only its last 4 characters. */
+export interface KeyStatus {
+  /** True when no usable provider key is set, so the Setup screen shows. */
+  required: boolean;
+  configured: boolean;
+  last4: string | null;
+  mode: "tester" | "dev";
+  dataDir: string | null;
+  version: string;
+}
+
+export interface KeySaved {
+  saved: true;
+  status: "valid" | "quota";
+  message?: string;
+  configured: boolean;
+  last4: string | null;
 }

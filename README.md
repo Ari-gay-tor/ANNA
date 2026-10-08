@@ -6,6 +6,8 @@ ANNA is a personal assistant that reduces cognitive load: it asks the smallest u
 
 Put your Gemini key in `.env` (copy `.env.example`), then double-click **`install-anna.cmd`**. You get an ANNA shortcut on the Desktop and in the Start menu that opens her in her own window, her server starts quietly at every login, and reminders show as Windows notifications even when her window is closed. Update with `update-anna.cmd`, remove with `uninstall-anna.cmd` (your data is kept). Full guide, settings and troubleshooting: [docs/app.md](docs/app.md).
 
+Testers (a zip kit on their own Windows PC, no `.env` editing, key entered in the app): see the [tester guide](docs/tester-guide.md). `npm run package` builds the kit (`release/ANNA-<version>.zip`); how data is kept per mode is in [docs/app.md](docs/app.md#dev-mode-and-tester-mode).
+
 ## Setup (developers)
 
 Requires Node 22 or newer.

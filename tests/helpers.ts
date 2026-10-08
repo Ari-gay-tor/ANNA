@@ -4,6 +4,7 @@ import { join } from "node:path";
 import type { PrismaClient } from "@prisma/client";
 import { createPrismaClient } from "../src/data/prisma";
 import { PrismaConversationRepository } from "../src/data/conversation-repository";
+import { PrismaFeedbackRepository } from "../src/data/feedback-repository";
 import { PrismaMemoryRepository } from "../src/data/memory-repository";
 import { PrismaReminderRepository } from "../src/data/reminder-repository";
 import { PrismaSettingsRepository } from "../src/data/settings-repository";
@@ -44,6 +45,7 @@ export function testAnna(options: { now?: Date } = {}) {
     memoryService: createMemoryService(memories),
     reminders,
     reminderService: createReminderService(reminders, clock),
+    feedback: new PrismaFeedbackRepository(db),
     anna,
     logs,
   };

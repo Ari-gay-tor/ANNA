@@ -1,0 +1,80 @@
+.flag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  min-height: 24px;
+  padding: 0 var(--s-2);
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  transition:
+    background-color var(--t-fast) ease,
+    color var(--t-fast) ease,
+    opacity var(--t-fast) ease;
+}
+
+.flag:hover {
+  background: var(--hover);
+  color: var(--ink);
+}
+
+.flagged {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  padding: 0 var(--s-2);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  flex-basis: 100%;
+  max-width: 520px;
+  margin-top: var(--s-1);
+  padding: var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  color: var(--ink);
+  font-size: 14px;
+  animation: fade-in var(--t-base) ease;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.hint {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.note {
+  width: 100%;
+  resize: vertical;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.note:focus-visible {
+  border-color: var(--accent);
+}
+
+.actions {
+  display: flex;
+  gap: var(--s-2);
+}
+
+.error {
+  color: var(--danger);
+}

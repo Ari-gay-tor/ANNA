@@ -1,7 +1,10 @@
 # Starts the ANNA server silently (no window). Does nothing if ANNA is already running.
 # Exit codes: 0 running, 2 the port is taken by another program, 3 did not become healthy in time, 4 cannot start (no Node, or not built).
+param([string]$DataDir)
 . "$PSScriptRoot\common.ps1"
+Set-AnnaDataDirOverride $DataDir
 
+$mode = Get-AnnaMode
 $port = Get-AnnaPort
 
 # One start at a time: the login entry and a shortcut click can arrive together.
@@ -17,7 +20,7 @@ try {
 
     $listener = Get-PortListener $port
     if ($listener -and -not (Test-IsAnnaServer $listener.CommandLine)) {
-        $msg = "Port $port is used by another program ($($listener.Name), process $($listener.Pid)), so ANNA was not started. Close that program or set ANNA_PORT in .env to a free port."
+        $msg = "Port $port is used by another program ($($listener.Name), process $($listener.Pid)), so ANNA was not started. Close that program or set ANNA_PORT in $($mode.ConfigFile) to a free port."
         Write-AnnaLog $msg
         Write-Host $msg
         exit 2
@@ -37,6 +40,12 @@ try {
             Write-Host $msg
             exit 4
         }
+        if ($mode.Mode -eq 'tester' -and -not (Test-Path (Get-AnnaDatabasePath))) {
+            $msg = "ANNA has no database yet ($(Get-AnnaDatabasePath)), so it was not started. Run install-anna.cmd first."
+            Write-AnnaLog $msg
+            Write-Host $msg
+            exit 4
+        }
         $launcher = Join-Path $script:AnnaRoot 'scripts\start-server.mjs'
         $env:ANNA_PORT = [string]$port
         Start-Process -FilePath $node -ArgumentList @('"' + $launcher + '"', '--detach') -WorkingDirectory $script:AnnaRoot -WindowStyle Hidden
@@ -52,7 +61,7 @@ try {
         }
         Start-Sleep -Milliseconds 500
     }
-    $msg = "ANNA did not answer on port $port within 30 seconds. See logs\anna.log for the reason."
+    $msg = "ANNA did not answer on port $port within 30 seconds. See $($mode.LogFile) for the reason."
     Write-AnnaLog $msg
     Write-Host $msg
     exit 3

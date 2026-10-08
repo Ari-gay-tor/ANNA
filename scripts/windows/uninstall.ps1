@@ -3,9 +3,11 @@
 param(
     [string]$DesktopDir = [Environment]::GetFolderPath('Desktop'),
     [string]$StartMenuDir = [Environment]::GetFolderPath('Programs'),
-    [string]$StartupDir = [Environment]::GetFolderPath('Startup')
+    [string]$StartupDir = [Environment]::GetFolderPath('Startup'),
+    [string]$DataDir
 )
 . "$PSScriptRoot\common.ps1"
+Set-AnnaDataDirOverride $DataDir
 
 & "$PSScriptRoot\stop-anna.ps1"
 
@@ -19,10 +21,15 @@ foreach ($path in @($paths.Desktop, $paths.StartMenu, $paths.Startup)) {
     }
 }
 
+$mode = Get-AnnaMode
 Write-Host ''
 Write-Host 'ANNA is uninstalled. Your data was NOT deleted:'
-Write-Host "  database and memories: $(Join-Path $script:AnnaRoot 'prisma\dev.db')"
-Write-Host "  settings and API key:  $(Join-Path $script:AnnaRoot '.env')"
-Write-Host "  logs:                  $script:AnnaLogDir"
-Write-Host 'Delete the ANNA folder yourself if you want all of it gone.'
+Write-Host "  database and memories: $(Get-AnnaDatabasePath)"
+Write-Host "  settings and API key:  $($mode.ConfigFile)"
+Write-Host "  logs:                  $($mode.LogDir)"
+if ($mode.Mode -eq 'tester') {
+    Write-Host "Delete the folder $($mode.DataDir) to remove all of it (this cannot be undone), and delete the ANNA folder you unzipped."
+} else {
+    Write-Host 'Delete the ANNA folder yourself if you want all of it gone.'
+}
 exit 0

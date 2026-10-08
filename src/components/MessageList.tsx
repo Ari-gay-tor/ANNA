@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnnaMark } from "./AnnaMark";
 import { ClarificationOptions } from "./ClarificationOptions";
+import { FlagControl } from "./FlagControl";
 import { MemoryChips } from "./MemoryChips";
 import { ReminderChips } from "./ReminderChips";
 import type { ClientMessage } from "./types";
@@ -68,7 +69,10 @@ export function MessageList({ messages, thinking, onSelectOption, footer }: Prop
                 {m.clarification && index === messages.length - 1 && (
                   <ClarificationOptions options={m.clarification.options} disabled={thinking} onSelect={onSelectOption} />
                 )}
-                <div className={styles.meta}>{time}</div>
+                <div className={`${styles.meta} ${styles.metaWrap}`}>
+                  {time}
+                  {!m.id.startsWith("pending-") && <FlagControl messageId={m.id} initialFlagged={Boolean(m.flagged)} buttonClassName={styles.reveal} />}
+                </div>
               </div>
             </div>
           );

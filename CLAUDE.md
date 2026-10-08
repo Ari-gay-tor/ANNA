@@ -30,4 +30,5 @@ npm run typecheck
 npm test
 npm run build
 npm run db:migrate # prisma migrate dev
+npm run package    # release/ANNA-<version>.zip, the tester kit (docs/tester-guide.md)
 ```

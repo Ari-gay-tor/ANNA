@@ -19,6 +19,7 @@ beforeEach(() => {
     memoryService: t.memoryService,
     reminders: t.reminders,
     reminderService: t.reminderService,
+    feedback: t.feedback,
   };
 });
 afterEach(async () => {

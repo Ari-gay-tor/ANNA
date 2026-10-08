@@ -1,6 +1,6 @@
 {
   "name": "anna",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "ANNA: a personal assistant that reduces cognitive load.",
   "engines": {
@@ -11,6 +11,7 @@
     "build": "next build",
     "start": "next start",
     "app:start": "node scripts/start-server.mjs",
+    "package": "node scripts/package.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "eval": "vitest run --config vitest.eval.config.mts",

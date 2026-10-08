@@ -1,0 +1,77 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  width: 100%;
+  text-align: left;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.field {
+  display: flex;
+  gap: var(--s-2);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.input:focus-visible {
+  border-color: var(--accent);
+}
+
+.toggle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--muted);
+  transition:
+    background-color var(--t-fast) ease,
+    color var(--t-fast) ease;
+}
+
+.toggle:hover {
+  background: var(--hover);
+  color: var(--ink);
+}
+
+.submit {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 var(--s-5);
+  font-size: 15px;
+}
+
+.message {
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  font-size: 14px;
+}
+
+.error {
+  border-color: var(--danger-border);
+  background: var(--danger-soft);
+}
+
+.notice {
+  background: var(--accent-soft);
+}
