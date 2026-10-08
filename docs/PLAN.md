@@ -18,6 +18,7 @@ Product intent lives in `docs/SPEC.md`. This file says what gets built, in what 
 | 5 | Behavior evals, failure log, acceptance walkthrough | done: first live eval 24/29, fixes re-run; V0 definition of done 27/27 (2026-10-07) |
 | 6 | One-click app on Ari's PC (own window, auto-start at login, Windows reminder toasts) | done: installed by Ari, toast confirmed on screen 2026-10-08; auto-start at login not yet confirmed |
 | 7 | UI polish: look & feel + smoother flow (added at Ari's request 2026-10-08; no engagement hooks: spec §14/§29) | done: reviewed 2026-10-08 (screenshots in docs/screenshots/slice7) |
+| 8 | Tester kit (Option B): zip install on testers' Windows PCs, first-run key setup, data outside the app folder, in-app feedback + export, tester guide (Ari 2026-10-08) | in progress |
 
 ## Stack (decided)
 

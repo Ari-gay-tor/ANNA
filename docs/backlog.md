@@ -8,7 +8,7 @@ Nothing here gets built until V0 is done (`docs/PLAN.md` Slice 5) and a week of 
 | Speech-to-text input | Spec §16 long-term vision. | After TTS, and only if typing is the friction |
 | Anthropic adapter | Second `LLMProvider`. | Slice 5 evals show Gemini is weak at clarification/brevity |
 | Reminders outside the browser | Desktop notifications when ANNA isn't open, or a tray app. | Missed reminders show up in real use |
-| Hosting for outside testers | Spec §48 wants 5–10 testers, but V0 has no auth and is single-user. Options: one install per person, or one hosted instance per person. | Before the first outside tester |
+| Hosting for outside testers (Option A) | Ari chose a per-PC zip install (Slice 8) for the first testers. Hosted later: link + login, per-tester data, reminders by email/push, privacy note, paid or per-tester Gemini quota, usage visibility with consent. About 2–3 slices. | When testers are non-technical, on phones, or not on Windows |
 | Inferred pattern memories | Rejected in V0. They need evidence across conversations, which needs retrieval of past messages. | Real use shows recurring patterns that ANNA misses |
 | Model-initiated "forget" | V0 deletes only from the Memory page. | Ari keeps asking ANNA in chat to forget things |
 | Streaming replies | V0 doesn't stream because the output is structured JSON. | Reply latency is a top complaint |
