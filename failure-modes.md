@@ -46,3 +46,12 @@ What user actually needed (spec §28 example 1): Find out whether they don't kno
 Failure category: insufficient clarification (borderline generic advice)
 Desired behavior: Ask that one either/or question with options.
 Status: Logged only. Re-run gave the same kind of reply ("Open the project file and write just one single sentence right now."), so that is 2 of 2 samples. Candidate for a prompt tweak if it shows up in real use.
+
+### 2026-10-08: can't show things visually (Ari, real use)
+User situation: Learning or understanding something, as a visual learner.
+What user asked: Explanations and examples that would land better as a visual: a diagram, a table, a laid-out example.
+What ANNA did: Replied in plain text only. The UI renders no markdown, tables, diagrams or images, and the prompt asks for plain text.
+What user actually needed: A visual sample (structure, diagram or side-by-side example) alongside or instead of prose.
+Failure category: insufficient response (capability gap)
+Desired behavior: When showing would help more than telling, ANNA can give a visual: at minimum formatted lists and tables, possibly simple diagrams.
+Status: Logged by Ari. Candidate next slice. Note spec §5 (concise) and the "long explanations when learning" preference from Test D.
