@@ -1,8 +1,9 @@
 // Shapes the API returns (dates arrive as ISO strings).
 
 import type { Clarification } from "@/core/domain/clarification";
-import type { MemoryOrigin, MemoryType, OperationResult } from "@/core/domain/memory";
+import type { MemoryOrigin, MemorySourceKind, MemoryType, OperationResult } from "@/core/domain/memory";
 import type { ReminderStatus } from "@/core/domain/reminder";
+import type { SetupAnswers } from "@/core/domain/setup";
 
 /**
  * What GET /api/conversations/[id] returns: created/updated memory ops also say whether the memory still exists,
@@ -35,6 +36,8 @@ export interface ClientMemory {
   evidenceQuote: string | null;
   sourceConversationId: string | null;
   sourceMessageId: string | null;
+  /** "setup" for a memory made from the first-run "About you" answers; null (older rows) means chat. */
+  sourceKind: MemorySourceKind | null;
   /** Whether the source conversation still exists. Absent on a memory returned by an edit; keep the value you already have. */
   sourceExists?: boolean;
   createdAt: string;
@@ -93,4 +96,18 @@ export interface KeySaved {
   message?: string;
   configured: boolean;
   last4: string | null;
+}
+
+/** GET /api/onboarding. */
+export interface OnboardingStatus {
+  completed: boolean;
+  needsKey: boolean;
+  answers: SetupAnswers | null;
+}
+
+/** POST /api/onboarding/answers. */
+export interface AnswersSaved {
+  answers: SetupAnswers;
+  /** How many memories these answers describe (the Done step mentions the Memory page when it is above 0). */
+  memoryCount: number;
 }

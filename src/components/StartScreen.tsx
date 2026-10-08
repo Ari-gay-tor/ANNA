@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { AnnaMark } from "./AnnaMark";
+import { api } from "./api";
 import { greetingFor } from "./greeting";
 import styles from "./StartScreen.module.css";
 
@@ -13,11 +14,25 @@ interface Props {
   footer?: ReactNode;
 }
 
-/** The empty conversation: ANNA's mark, a greeting for the time of day, and three ways to begin. */
+/** The empty conversation: ANNA's mark, a greeting for the time of day (with the name from setup, if given), and three ways to begin. */
 export function StartScreen({ disabled, onStarter, footer }: Props) {
   // The clock is the browser's, so it is read after mount (not during the server render).
+  // The name comes from the saved setup answers; if it cannot be read the greeting is simply without it.
   const [greeting, setGreeting] = useState<string | null>(null);
-  useEffect(() => setGreeting(greetingFor(new Date())), []);
+  useEffect(() => {
+    let cancelled = false;
+    const base = greetingFor(new Date());
+    api
+      .onboarding()
+      .then((status) => status.answers?.name || null)
+      .catch(() => null)
+      .then((name) => {
+        if (!cancelled) setGreeting(name ? `${base}, ${name}` : base);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className={styles.scroll}>

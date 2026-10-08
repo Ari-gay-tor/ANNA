@@ -1,12 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { api } from "./api";
 import { KeyForm } from "./KeyForm";
 import type { KeyStatus } from "./types";
 import styles from "./Page.module.css";
 
 export function SettingsPage() {
+  const router = useRouter();
+  const [rerunBusy, setRerunBusy] = useState(false);
+  const [rerunError, setRerunError] = useState<string | null>(null);
   const [status, setStatus] = useState<KeyStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -23,6 +27,20 @@ export function SettingsPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  /** Clears "setup done" on the server; the layout then shows the setup flow, pre-filled with the earlier answers. */
+  async function runSetupAgain() {
+    setRerunBusy(true);
+    setRerunError(null);
+    try {
+      await api.resetSetup();
+      router.push("/");
+      router.refresh();
+    } catch (e) {
+      setRerunError(e instanceof Error ? e.message : "Something went wrong.");
+      setRerunBusy(false);
+    }
+  }
 
   return (
     <div className={styles.page}>
@@ -61,6 +79,26 @@ export function SettingsPage() {
                 {saved && (
                   <p className={styles.sectionNote} role="status">
                     Saved. ANNA is using the new key now.
+                  </p>
+                )}
+              </div>
+            </section>
+
+            <section className={styles.group}>
+              <h2 className={styles.groupTitle}>Setup</h2>
+              <div className={`${styles.card} ${styles.stack}`}>
+                <div>
+                  <p>Go through the welcome and the &ldquo;about you&rdquo; questions again.</p>
+                  <p className={styles.sectionNote}>Your earlier answers are filled in. Memories you have edited are kept.</p>
+                </div>
+                <div>
+                  <button type="button" className="btn" onClick={() => void runSetupAgain()} disabled={rerunBusy}>
+                    Run setup again
+                  </button>
+                </div>
+                {rerunError && (
+                  <p className={styles.itemError} role="alert">
+                    {rerunError}
                   </p>
                 )}
               </div>

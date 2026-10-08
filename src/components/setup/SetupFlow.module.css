@@ -1,0 +1,385 @@
+.scroll {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow-y: auto;
+}
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 540px;
+  margin: auto;
+  padding: var(--s-6) var(--s-4);
+}
+
+.card {
+  width: 100%;
+  padding: var(--s-5) var(--s-8) var(--s-8);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+}
+
+/* Back on the left, the step dots in the middle; the empty right cell keeps the dots centered. */
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-height: 36px;
+  margin-bottom: var(--s-4);
+}
+
+.back {
+  justify-self: start;
+  margin-left: calc(var(--s-3) * -1);
+}
+
+.dots {
+  display: flex;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border-strong);
+  transition: background-color var(--t-base) ease;
+}
+
+.dotDone {
+  background: var(--accent);
+  opacity: 0.45;
+}
+
+.dotNow {
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* Each step fades in over 150 ms (the global reduced-motion rule cuts this to nothing). */
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: step-fade 150ms ease;
+}
+
+@keyframes step-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.title {
+  margin-top: var(--s-5);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+/* The heading is focused by script when a step appears, so a screen reader starts there; a ring on it would only be noise. */
+.title:focus,
+.title:focus-visible {
+  outline: none;
+}
+
+.markless {
+  margin-top: 0;
+}
+
+.lead {
+  margin-top: var(--s-2);
+  color: var(--muted);
+  font-size: 17px;
+}
+
+.points {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  width: 100%;
+  margin: var(--s-6) 0 0;
+  padding: var(--s-4) var(--s-5);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  list-style: none;
+  text-align: left;
+  line-height: 1.45;
+}
+
+.points li {
+  display: flex;
+  gap: var(--s-3);
+}
+
+.points li::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  margin-top: 0.55em;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.primary {
+  min-height: 44px;
+  margin-top: var(--s-6);
+  padding: 0 var(--s-8);
+  font-size: 15px;
+}
+
+.skip {
+  margin-top: var(--s-4);
+  padding: var(--s-2) var(--s-3);
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.skip:hover {
+  color: var(--ink);
+}
+
+.notice {
+  width: 100%;
+  margin-top: var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--accent-soft);
+  font-size: 14px;
+  text-align: left;
+}
+
+.error {
+  width: 100%;
+  margin-top: var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--r-md);
+  background: var(--danger-soft);
+  font-size: 14px;
+  text-align: left;
+}
+
+/* Key step */
+.keySteps {
+  width: 100%;
+  margin: var(--s-5) 0;
+  padding: var(--s-4) var(--s-5) var(--s-4) var(--s-8);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--bg);
+  text-align: left;
+  line-height: 1.5;
+}
+
+.keySteps li + li {
+  margin-top: var(--s-2);
+}
+
+.privacy {
+  margin-top: var(--s-5);
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.continue {
+  margin-top: var(--s-4);
+}
+
+/* About you step */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+  width: 100%;
+  margin-top: var(--s-6);
+  text-align: left;
+}
+
+.field,
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.label {
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.input {
+  width: 100%;
+  height: 44px;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.input::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+.input:focus-visible {
+  border-color: var(--accent);
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 44px;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  background: var(--bg);
+  cursor: pointer;
+  transition:
+    background-color var(--t-fast) ease,
+    border-color var(--t-fast) ease;
+}
+
+.option:hover {
+  background: var(--hover);
+}
+
+.option:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.option:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.option input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 var(--s-4);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--bg);
+  font-size: 14px;
+  cursor: pointer;
+  transition:
+    background-color var(--t-fast) ease,
+    border-color var(--t-fast) ease;
+}
+
+.chip:hover {
+  background: var(--hover);
+}
+
+.chip:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  font-weight: 600;
+}
+
+.chip:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.chip input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.formActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-top: var(--s-2);
+}
+
+.formActions .primary {
+  margin-top: 0;
+  padding: 0 var(--s-6);
+}
+
+.formActions .skip {
+  margin-top: 0;
+  margin-left: calc(var(--s-3) * -1);
+}
+
+/* Done step */
+.doneNote {
+  margin-top: var(--s-4);
+  color: var(--muted);
+  font-size: 15px;
+}
+
+@media (max-width: 759px) {
+  .wrap {
+    padding: var(--s-4) var(--s-3);
+  }
+
+  .card {
+    padding: var(--s-4) var(--s-5) var(--s-6);
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .formActions .primary {
+    flex: 1;
+  }
+}

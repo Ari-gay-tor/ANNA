@@ -3,6 +3,7 @@
 import type { MemoryRepository, ReminderRepository, SettingsRepository } from "../core/ports";
 import { createAnna, type Anna } from "../core/runtime/anna";
 import { createMemoryService, type MemoryService } from "../core/runtime/memory-service";
+import { createOnboardingService, type OnboardingService } from "../core/runtime/onboarding-service";
 import { createReminderService, type ReminderService } from "../core/runtime/reminder-service";
 import { PrismaConversationRepository, type ManagedConversationRepository } from "../data/conversation-repository";
 import { PrismaFeedbackRepository, type FeedbackRepository } from "../data/feedback-repository";
@@ -18,6 +19,7 @@ export interface Services {
   settings: SettingsRepository;
   memories: MemoryRepository;
   memoryService: MemoryService;
+  onboarding: OnboardingService;
   reminders: ReminderRepository;
   reminderService: ReminderService;
   feedback: FeedbackRepository;
@@ -36,6 +38,7 @@ export function getServices(): Services {
     const memories = new PrismaMemoryRepository(db);
     const reminders = new PrismaReminderRepository(db);
     const clock = () => new Date();
+    const memoryService = createMemoryService(memories);
     const provider = withReplyLogging(createProvider(process.env, log), log);
     const anna = createAnna({ provider, conversations, settings, memories, reminders, clock, log });
     globalForServices.__annaServices = {
@@ -43,7 +46,8 @@ export function getServices(): Services {
       conversations,
       settings,
       memories,
-      memoryService: createMemoryService(memories),
+      memoryService,
+      onboarding: createOnboardingService({ settings, memoryService, clock }),
       reminders,
       reminderService: createReminderService(reminders, clock),
       feedback: new PrismaFeedbackRepository(db),

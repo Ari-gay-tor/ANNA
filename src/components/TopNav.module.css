@@ -14,13 +14,6 @@
   flex: 1 1 auto;
   gap: var(--s-1);
   min-width: 0;
-  /* On a very narrow screen the links scroll sideways instead of running under the settings and theme buttons. */
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.nav::-webkit-scrollbar {
-  display: none;
 }
 
 .link {
@@ -72,11 +65,112 @@
   color: var(--ink);
 }
 
-@media (max-width: 420px) {
+/* The More menu is for phone width only. */
+.more {
+  position: relative;
+  display: none;
+  flex: none;
+}
+
+.moreButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  padding: 6px var(--s-3);
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  transition:
+    background-color var(--t-fast) ease,
+    color var(--t-fast) ease;
+}
+
+.moreButton:hover {
+  background: var(--hover);
+  color: var(--ink);
+}
+
+.moreButton.active,
+.moreButton.active:hover {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+.moreButton[aria-expanded="true"] {
+  background: var(--hover);
+  color: var(--ink);
+}
+
+.panel {
+  position: absolute;
+  top: calc(100% + var(--s-2));
+  right: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 200px;
+  padding: var(--s-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+  animation: fade-in var(--t-fast) ease;
+}
+
+.panelLink {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--s-3);
+  border-radius: var(--r-sm);
+  color: var(--ink);
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.panelLink:hover {
+  background: var(--hover);
+}
+
+.panelTheme {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-top: var(--s-1);
+  padding: var(--s-2) var(--s-3) var(--s-1);
+  border-top: 1px solid var(--border);
+}
+
+.panelLabel {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+@media (max-width: 759px) {
+  .secondary,
+  .tools {
+    display: none;
+  }
+
+  .more {
+    display: block;
+  }
+
+  .nav {
+    flex: 0 1 auto;
+  }
+
   .bar {
     padding-inline: var(--s-3);
   }
+}
 
+@media (max-width: 420px) {
   .link {
     padding-inline: var(--s-2);
   }

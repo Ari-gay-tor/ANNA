@@ -155,7 +155,9 @@ function MemoryItem({
             <span className={`${styles.pill} ${styles.pillSoft}`}>{confidenceLabel(memory.confidence)} confidence</span>
             <span className={styles.pill}>{ORIGIN_LABEL[memory.origin]}</span>
             <span>{new Date(memory.createdAt).toLocaleDateString("en-CA")}</span>
-            {memory.sourceConversationId &&
+            {memory.sourceKind === "setup" && <span>From setup</span>}
+            {memory.sourceKind !== "setup" &&
+              memory.sourceConversationId &&
               (memory.sourceExists === false ? (
                 <span>from a deleted conversation</span>
               ) : (

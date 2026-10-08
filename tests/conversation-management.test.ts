@@ -17,6 +17,7 @@ beforeEach(() => {
     settings: t.settings,
     memories: t.memories,
     memoryService: t.memoryService,
+    onboarding: t.onboarding,
     reminders: t.reminders,
     reminderService: t.reminderService,
     feedback: t.feedback,

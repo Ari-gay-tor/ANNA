@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Services } from "../src/server/anna";
+const PACKAGE_VERSION = (JSON.parse(readFileSync(join(process.cwd(), "package.json"), "utf8")) as { version: string }).version;
 
 const fake = vi.hoisted(() => ({ created: [] as Array<{ apiKey: string; model: string; fallbackModels: string }>, calls: 0 }));
 
@@ -69,7 +70,7 @@ const GOOD = "AIzaSyFakeGoodKey_0123456789abcdEFGH";
 describe("GET /api/settings/key", () => {
   it("with no key: setup is required, and there is nothing to show", async () => {
     const body = await (await get()).json();
-    expect(body).toMatchObject({ required: true, configured: false, last4: null, mode: "tester", dataDir, version: "0.2.0" });
+    expect(body).toMatchObject({ required: true, configured: false, last4: null, mode: "tester", dataDir, version: PACKAGE_VERSION });
   });
 
   it("with a key: setup is not required, and only the last 4 characters come back, never the key", async () => {

@@ -19,7 +19,7 @@ Product intent lives in `docs/SPEC.md`. This file says what gets built, in what 
 | 6 | One-click app on Ari's PC (own window, auto-start at login, Windows reminder toasts) | done: installed by Ari, toast confirmed on screen 2026-10-08; auto-start at login not yet confirmed |
 | 7 | UI polish: look & feel + smoother flow (added at Ari's request 2026-10-08; no engagement hooks: spec §14/§29) | done: reviewed 2026-10-08 (screenshots in docs/screenshots/slice7) |
 | 8 | Tester kit (Option B): zip install on testers' Windows PCs, first-run key setup, data outside the app folder, in-app feedback + export, tester guide (Ari 2026-10-08) | done: reviewed 2026-10-08; zip release/ANNA-0.2.0.zip (197 KB); tester flow proven in scratch; real winget path untested |
-| 9 | Guided first-run setup: welcome + optional "about you" (saved as memories); re-runnable from Settings (Ari 2026-10-08) | next |
+| 9 | Guided first-run setup: welcome + optional "about you" (saved as memories); re-runnable from Settings (Ari 2026-10-08) | done: reviewed 2026-10-08; tester zip rebuilt as v0.3.0 |
 
 ## Stack (decided)
 

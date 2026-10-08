@@ -7,6 +7,10 @@ export type MemoryType = (typeof MEMORY_TYPES)[number];
 export const MEMORY_ORIGINS = ["stated", "inferred", "edited"] as const;
 export type MemoryOrigin = (typeof MEMORY_ORIGINS)[number];
 
+/** Where a memory came from. Null (rows from before Slice 9) means chat. */
+export const MEMORY_SOURCE_KINDS = ["chat", "setup"] as const;
+export type MemorySourceKind = (typeof MEMORY_SOURCE_KINDS)[number];
+
 export const MAX_STATEMENT_LENGTH = 300;
 
 /** Confidence is set by the runtime and never trusted from the model. */
@@ -24,6 +28,7 @@ export interface Memory {
   evidenceQuote: string | null;
   sourceConversationId: string | null;
   sourceMessageId: string | null;
+  sourceKind: MemorySourceKind | null;
   createdAt: Date;
   updatedAt: Date;
 }

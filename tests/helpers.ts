@@ -11,6 +11,7 @@ import { PrismaSettingsRepository } from "../src/data/settings-repository";
 import { FakeProvider } from "../src/core/llm/fake";
 import { createAnna } from "../src/core/runtime/anna";
 import { createMemoryService } from "../src/core/runtime/memory-service";
+import { createOnboardingService } from "../src/core/runtime/onboarding-service";
 import { createReminderService } from "../src/core/runtime/reminder-service";
 
 const TEMPLATE_DIR = join(process.cwd(), "node_modules", ".anna-test");
@@ -35,6 +36,7 @@ export function testAnna(options: { now?: Date } = {}) {
   const now = options.now ?? FIXED_NOW;
   const reminders = new PrismaReminderRepository(db);
   const clock = () => now;
+  const memoryService = createMemoryService(memories);
   const anna = createAnna({ provider, conversations, settings, memories, reminders, clock, log: (line) => logs.push(line) });
   return {
     db,
@@ -42,7 +44,8 @@ export function testAnna(options: { now?: Date } = {}) {
     conversations,
     settings,
     memories,
-    memoryService: createMemoryService(memories),
+    memoryService,
+    onboarding: createOnboardingService({ settings, memoryService, clock }),
     reminders,
     reminderService: createReminderService(reminders, clock),
     feedback: new PrismaFeedbackRepository(db),

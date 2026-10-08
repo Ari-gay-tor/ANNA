@@ -20,6 +20,7 @@ function memory(id: string, type: MemoryType, statement: string, createdAt = "20
     evidenceQuote: null,
     sourceConversationId: null,
     sourceMessageId: null,
+    sourceKind: null,
     createdAt: new Date(createdAt),
     updatedAt: new Date(createdAt),
   };

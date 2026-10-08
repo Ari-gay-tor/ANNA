@@ -14,6 +14,7 @@ import {
   type JsonMode,
 } from "../core/llm/openai-compatible";
 import { LLMError, type LLMProvider, type LLMRequest, type LLMResponse } from "../core/llm/provider";
+import { activeConfig } from "./data-dir";
 
 type Env = Record<string, string | undefined>;
 type Log = (line: string) => void;
@@ -78,7 +79,12 @@ function createGemini(env: Env): GeminiProvider {
     });
   } catch (error) {
     if (error instanceof LLMError && error.message.includes("GEMINI_API_KEY")) {
-      throw new LLMError("CONFIG", `${error.message} Add it to .env and restart the server, or set ANNA_PROVIDER=fake.`);
+      // A tester has no .env: the key is saved from the Settings page (to config.env). Only a developer's checkout names .env.
+      const fix =
+        activeConfig(env).mode === "tester"
+          ? "Set it up in ANNA's Settings."
+          : "Set it up in ANNA's Settings, or add it to .env and restart the server.";
+      throw new LLMError("CONFIG", `${error.message} ${fix}`);
     }
     throw error;
   }

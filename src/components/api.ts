@@ -1,4 +1,15 @@
-import type { ClientConversation, ClientFeedback, ClientMemory, ClientMessage, ClientReminder, KeySaved, KeyStatus } from "./types";
+import type { SetupAnswers } from "@/core/domain/setup";
+import type {
+  AnswersSaved,
+  ClientConversation,
+  ClientFeedback,
+  ClientMemory,
+  ClientMessage,
+  ClientReminder,
+  KeySaved,
+  KeyStatus,
+  OnboardingStatus,
+} from "./types";
 
 /** A failed API call. When the server saved the user's message before failing, it is attached. */
 export class ApiFailure extends Error {
@@ -8,6 +19,8 @@ export class ApiFailure extends Error {
     readonly status: number,
     readonly conversationId?: string,
     readonly userMessage?: ClientMessage,
+    /** "settings": the error card offers a link to Settings (the Gemini key is the problem). */
+    readonly action?: string,
   ) {
     super(message);
   }
@@ -28,6 +41,7 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
       response.status,
       body?.conversationId,
       body?.userMessage,
+      body?.error?.action,
     );
   }
   return body as T;
@@ -70,6 +84,10 @@ export const api = {
   keyStatus: () => request<KeyStatus>("/api/settings/key"),
   /** Checks the key with Google and saves it. The key goes in the request body, never in the URL. */
   saveKey: (key: string) => request<KeySaved>("/api/settings/key", json("PUT", { key })),
+  onboarding: () => request<OnboardingStatus>("/api/onboarding"),
+  saveSetupAnswers: (answers: SetupAnswers) => request<AnswersSaved>("/api/onboarding/answers", json("POST", answers)),
+  completeSetup: () => request<{ completed: true }>("/api/onboarding/complete", json("POST", {})),
+  resetSetup: () => request<{ completed: false }>("/api/onboarding/reset", json("POST", {})),
   flagMessage: (messageId: string, note: string) =>
     request<{ feedback: { id: string }; created: boolean }>("/api/feedback", json("POST", { messageId, note: note || undefined })),
   listFeedback: () => request<{ items: ClientFeedback[]; version: string }>("/api/feedback"),

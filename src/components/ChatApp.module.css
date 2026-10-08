@@ -51,6 +51,7 @@
 .error {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: var(--s-3);
   width: 100%;

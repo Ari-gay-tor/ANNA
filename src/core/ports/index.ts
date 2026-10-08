@@ -1,5 +1,5 @@
 import type { Clarification } from "../domain/clarification";
-import type { Memory, MemoryOrigin, MemoryType, OperationResult } from "../domain/memory";
+import type { Memory, MemoryOrigin, MemorySourceKind, MemoryType, OperationResult } from "../domain/memory";
 import type { Reminder } from "../domain/reminder";
 import type { Conversation, ConversationWithMessages, Message, Role } from "../domain/types";
 
@@ -25,6 +25,8 @@ export interface ConversationRepository {
 export interface SettingsRepository {
   get(key: string): Promise<string | null>;
   set(key: string, value: string): Promise<void>;
+  /** Removes the setting. Does nothing when it is not set. */
+  delete(key: string): Promise<void>;
 }
 
 export interface NewMemory {
@@ -35,6 +37,8 @@ export interface NewMemory {
   evidenceQuote: string | null;
   sourceConversationId: string | null;
   sourceMessageId: string | null;
+  /** Omitted for chat memories (stored as null). */
+  sourceKind?: MemorySourceKind | null;
 }
 
 /** Fields that may change on an existing memory. `type` is deliberately absent: it never changes. */

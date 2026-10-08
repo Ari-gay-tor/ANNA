@@ -1,4 +1,4 @@
-// ANNA V0 schema (Slices 1-4 and 8; see docs/PLAN.md for the final shape).
+// ANNA V0 schema (Slices 1-4, 8 and 9; see docs/PLAN.md for the final shape).
 // Enum-like fields are plain strings validated in src/core/domain.
 
 generator client {
@@ -41,6 +41,7 @@ model Memory {
   evidenceQuote        String?
   sourceConversationId String?
   sourceMessageId      String?
+  sourceKind           String? // "chat" | "setup"; null on rows from before Slice 9 and means chat
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 }

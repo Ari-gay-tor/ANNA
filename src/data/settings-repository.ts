@@ -12,4 +12,8 @@ export class PrismaSettingsRepository implements SettingsRepository {
   async set(key: string, value: string): Promise<void> {
     await this.db.setting.upsert({ where: { key }, create: { key, value }, update: { value } });
   }
+
+  async delete(key: string): Promise<void> {
+    await this.db.setting.deleteMany({ where: { key } });
+  }
 }

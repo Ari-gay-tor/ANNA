@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { ApiFailure, api } from "./api";
 import { AnnaMark } from "./AnnaMark";
 import { Composer } from "./Composer";
@@ -23,7 +24,13 @@ export function ChatApp() {
   const [messages, setMessages] = useState<ClientMessage[]>([]);
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(selectedId !== null); // fetching the selected conversation
-  const [error, setError] = useState<string | null>(null);
+  const [errorState, setErrorState] = useState<{ text: string; action: string | null } | null>(null);
+  const error = errorState?.text ?? null;
+  // `action` ("settings") adds a link to Settings next to the message, e.g. when the Gemini key is the problem.
+  const setError = useCallback(
+    (text: string | null, action?: string | null) => setErrorState(text === null ? null : { text, action: action ?? null }),
+    [],
+  );
   const [drawerOpen, setDrawerOpen] = useState(false); // the sidebar on narrow screens
   const [focusKey, setFocusKey] = useState(0); // bumped to put the cursor back in the composer
   // The conversation currently shown. Kept in a ref so async handlers see the latest value.
@@ -35,7 +42,7 @@ export function ChatApp() {
     try {
       setConversations((await api.listConversations()).conversations);
     } catch (e) {
-      setError(messageOf(e));
+      setError(messageOf(e), actionOf(e));
     }
   }, []);
 
@@ -74,7 +81,7 @@ export function ChatApp() {
           activeIdRef.current = null;
           router.replace("/");
         } else {
-          setError(messageOf(e));
+          setError(messageOf(e), actionOf(e));
         }
       });
   }, [selectedId, router]);
@@ -110,11 +117,11 @@ export function ChatApp() {
         const saved = e.userMessage;
         adopt(e.conversationId);
         setMessages((m) => [...m.filter((x) => x.id !== pending.id), saved]);
-        setError(e.message);
+        setError(e.message, e.action);
         return true;
       }
       setMessages((m) => m.filter((x) => x.id !== pending.id));
-      setError(messageOf(e));
+      setError(messageOf(e), actionOf(e));
       return false;
     } finally {
       setBusy(false);
@@ -136,7 +143,7 @@ export function ChatApp() {
         const reloaded = await api.getConversation(id).catch(() => null);
         if (reloaded) setMessages(reloaded.messages);
       } else {
-        setError(messageOf(e));
+        setError(messageOf(e), actionOf(e));
       }
     } finally {
       setBusy(false);
@@ -212,6 +219,11 @@ export function ChatApp() {
   const errorCard = error && (
     <div className={styles.error} role="alert">
       <span className={styles.errorText}>{error}</span>
+      {errorState?.action === "settings" && (
+        <Link href="/settings" className="btn btn-sm">
+          Open Settings
+        </Link>
+      )}
       {canRetry && (
         <button type="button" className="btn btn-sm" onClick={retry} disabled={busy}>
           Retry
@@ -250,6 +262,10 @@ export function ChatApp() {
       </main>
     </div>
   );
+}
+
+function actionOf(error: unknown): string | null {
+  return error instanceof ApiFailure ? (error.action ?? null) : null;
 }
 
 function messageOf(error: unknown): string {
