@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { formatReminderDue } from "@/core/time/format-reminder-time";
 import { api } from "./api";
+import { IconBell, IconCheck, IconX } from "./icons";
 import type { ClientReminder } from "./types";
-import styles from "./RemindersPage.module.css";
+import styles from "./Page.module.css";
 
 const REFRESH_MS = 15_000;
 
@@ -43,8 +44,8 @@ export function RemindersPage() {
             {error}
           </div>
         )}
-        {data === null && !error && <p className={styles.muted}>Loading…</p>}
-        {empty && <p className={styles.muted}>No reminders. Ask ANNA: &apos;Remind me at 6 PM to call Dad.&apos;</p>}
+        {data === null && !error && <p className={`${styles.muted} ${styles.lead}`}>Loading…</p>}
+        {empty && <p className={styles.empty}>No reminders. Ask ANNA: &apos;Remind me at 6 PM to call Dad.&apos;</p>}
 
         {data && data.upcoming.length > 0 && (
           <section className={styles.group}>
@@ -62,12 +63,17 @@ export function RemindersPage() {
             <h2 className={styles.groupTitle}>Recent</h2>
             <ul className={styles.list}>
               {data.recent.map((r) => (
-                <li key={r.id} className={styles.item}>
-                  <p className={styles.text}>{r.text}</p>
-                  <p className={styles.meta}>
-                    <span>{formatReminderDue(new Date(r.dueAt), r.timezone, now)}</span>
-                    <span>{recentLabel(r)}</span>
-                  </p>
+                <li key={r.id} className={styles.card}>
+                  <div className={styles.rowTop}>
+                    <span className={styles.rowIcon}>{r.status === "cancelled" ? <IconX size={18} /> : <IconCheck size={18} />}</span>
+                    <div className={styles.rowBody}>
+                      <p className={styles.text}>{r.text}</p>
+                      <div className={styles.meta}>
+                        <span>{formatReminderDue(new Date(r.dueAt), r.timezone, now)}</span>
+                        <span className={styles.pill}>{recentLabel(r)}</span>
+                      </div>
+                    </div>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -101,13 +107,18 @@ function UpcomingItem({ reminder, now, onChanged }: { reminder: ClientReminder; 
   }
 
   return (
-    <li className={styles.item}>
-      <p className={styles.text}>{reminder.text}</p>
-      <p className={styles.meta}>
-        <span>{formatReminderDue(new Date(reminder.dueAt), reminder.timezone, now)}</span>
-      </p>
-      <div className={styles.actions}>
-        <button type="button" onClick={cancel} disabled={busy}>
+    <li className={styles.card}>
+      <div className={styles.rowTop}>
+        <span className={styles.rowIcon}>
+          <IconBell size={18} />
+        </span>
+        <div className={styles.rowBody}>
+          <p className={styles.text}>{reminder.text}</p>
+          <div className={styles.meta}>
+            <span>{formatReminderDue(new Date(reminder.dueAt), reminder.timezone, now)}</span>
+          </div>
+        </div>
+        <button type="button" className="btn btn-sm" onClick={cancel} disabled={busy}>
           Cancel
         </button>
       </div>
@@ -140,7 +151,8 @@ function NotificationButton() {
   return (
     <div className={styles.notify}>
       {permission === "default" && (
-        <button type="button" onClick={() => void enable()}>
+        <button type="button" className="btn btn-sm" onClick={() => void enable()}>
+          <IconBell size={15} />
           Turn on desktop notifications
         </button>
       )}

@@ -1,55 +1,138 @@
-.list {
+.scroll {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  padding: 16px;
+}
+
+.column {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--s-3);
+  width: 100%;
+  max-width: 752px;
+  margin: 0 auto;
+  padding: var(--s-6) var(--s-4) var(--s-4);
 }
 
-.empty {
-  margin: auto;
-  color: var(--muted);
-}
-
-.message {
-  max-width: 720px;
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+.row {
+  display: flex;
+  min-width: 0;
+  animation: fade-in var(--t-base) ease;
 }
 
 .user {
-  background: var(--user-bg);
-  align-self: flex-end;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
-.author {
-  margin-bottom: 2px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.tag {
-  margin-left: 8px;
-  padding: 0 6px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 11px;
-  font-weight: 400;
-  letter-spacing: 0.03em;
-  text-transform: none;
-}
-
-.content {
+.bubble {
+  max-width: min(85%, 560px);
+  padding: 10px var(--s-4);
+  border-radius: var(--r-lg) var(--r-lg) var(--s-1) var(--r-lg);
+  background: var(--accent-soft);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.55;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
-.thinking {
+.assistant {
+  align-items: flex-start;
+  gap: var(--s-3);
+}
+
+.markSlot {
+  flex: none;
+  padding-top: 1px;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.text {
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* The time shows on hover or focus; the space is always reserved so nothing jumps. */
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 20px;
+  margin-top: var(--s-1);
   color: var(--muted);
-  font-style: italic;
+  font-size: 12px;
+}
+
+.time {
+  opacity: 0;
+  transition: opacity var(--t-fast) ease;
+}
+
+.row:hover .time,
+.row:focus-within .time {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .time {
+    opacity: 1;
+  }
+}
+
+.tag {
+  padding: 0 var(--s-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 18px;
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+}
+
+.dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes pulse {
+  0%,
+  70%,
+  100% {
+    opacity: 0.3;
+  }
+  35% {
+    opacity: 1;
+  }
+}
+
+/* Static dots when the user asks for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .dots span {
+    animation: none;
+    opacity: 0.7;
+  }
 }

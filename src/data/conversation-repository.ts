@@ -4,8 +4,39 @@ import { parseStoredClarification, type Clarification } from "../core/domain/cla
 import { parseStoredOperations, type OperationResult } from "../core/domain/memory";
 import type { ConversationRepository } from "../core/ports";
 
-export class PrismaConversationRepository implements ConversationRepository {
+/**
+ * What the Conversations API needs beyond the core port (rename, delete, existence checks).
+ * Kept here, not in src/core/ports, because the runtime never renames or deletes conversations.
+ */
+export interface ManagedConversationRepository extends ConversationRepository {
+  /** Changes the title only; updatedAt is kept, so the chat stays where it is in the sidebar. Null if the conversation does not exist. */
+  rename(id: string, title: string): Promise<Conversation | null>;
+  /** Deletes the conversation and its messages. True if it existed. Memories and reminders made from it are left alone. */
+  delete(id: string): Promise<boolean>;
+  /** Which of these ids are still conversations. */
+  existingIds(ids: readonly string[]): Promise<Set<string>>;
+}
+
+export class PrismaConversationRepository implements ManagedConversationRepository {
   constructor(private readonly db: PrismaClient) {}
+
+  async rename(id: string, title: string): Promise<Conversation | null> {
+    const current = await this.db.conversation.findUnique({ where: { id }, select: { updatedAt: true } });
+    if (!current) return null;
+    // @updatedAt would bump on any update; passing the old value keeps it, so renaming does not reorder the sidebar.
+    return this.db.conversation.update({ where: { id }, data: { title, updatedAt: current.updatedAt } });
+  }
+
+  async delete(id: string): Promise<boolean> {
+    const { count } = await this.db.conversation.deleteMany({ where: { id } }); // messages cascade
+    return count > 0;
+  }
+
+  async existingIds(ids: readonly string[]): Promise<Set<string>> {
+    if (ids.length === 0) return new Set();
+    const rows = await this.db.conversation.findMany({ where: { id: { in: [...ids] } }, select: { id: true } });
+    return new Set(rows.map((r) => r.id));
+  }
 
   async create(input: { title: string }): Promise<Conversation> {
     return this.db.conversation.create({ data: { title: input.title } });

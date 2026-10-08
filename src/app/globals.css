@@ -1,15 +1,100 @@
+/*
+ * Design tokens. Every component reads these; nothing hard-codes a color.
+ * Light is the default. Dark follows the system unless the switch pins a theme (html[data-theme]).
+ * The two dark blocks below must stay identical.
+ */
 :root {
-  --bg: #ffffff;
-  --panel: #f5f5f4;
-  --border: #dcdcd8;
-  --text: #1c1c1a;
-  --muted: #6b6b66;
+  color-scheme: light;
+
+  /* Surfaces */
+  --bg: #faf8f5;
+  --surface: #ffffff;
+  --surface-2: #f3efe9;
+  --hover: #efeae2;
+  --border: #e6e0d6;
+  --border-strong: #d3cabc;
+  --overlay: rgba(31, 35, 40, 0.38);
+
+  /* Text */
+  --ink: #1f2328;
+  --muted: #5e636b;
+
+  /* Brand */
   --accent: #2f5d50;
-  --accent-text: #ffffff;
-  --user-bg: #eef3f1;
-  --error-bg: #fdecea;
-  --error-text: #8a1c14;
-  --reminder-bg: #fff6df;
+  --accent-hover: #264c41;
+  --on-accent: #ffffff;
+  --accent-ink: #2f5d50;
+  --accent-soft: #e4eee9;
+  --focus: #2f5d50;
+
+  /* Status */
+  --danger: #b42318;
+  --danger-soft: #fbedea;
+  --danger-border: #f0cbc5;
+
+  /* Shape, space, depth, type */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 20px;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --shadow-float: 0 10px 28px rgba(31, 35, 40, 0.1), 0 2px 6px rgba(31, 35, 40, 0.06);
+  --font-ui: var(--font-sans), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --t-fast: 120ms;
+  --t-base: 160ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #1b1917;
+    --surface: #242120;
+    --surface-2: #2c2926;
+    --hover: #2a2724;
+    --border: #3a3632;
+    --border-strong: #4b463f;
+    --overlay: rgba(0, 0, 0, 0.55);
+    --ink: #ede9e3;
+    --muted: #a8a198;
+    --accent: #5fa08b;
+    --accent-hover: #72b09c;
+    --on-accent: #0f1a16;
+    --accent-ink: #86c3ae;
+    --accent-soft: #263a33;
+    --focus: #86c3ae;
+    --danger: #f2877d;
+    --danger-soft: #3a2420;
+    --danger-border: #5c3530;
+    --shadow-float: 0 10px 28px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #1b1917;
+  --surface: #242120;
+  --surface-2: #2c2926;
+  --hover: #2a2724;
+  --border: #3a3632;
+  --border-strong: #4b463f;
+  --overlay: rgba(0, 0, 0, 0.55);
+  --ink: #ede9e3;
+  --muted: #a8a198;
+  --accent: #5fa08b;
+  --accent-hover: #72b09c;
+  --on-accent: #0f1a16;
+  --accent-ink: #86c3ae;
+  --accent-soft: #263a33;
+  --focus: #86c3ae;
+  --danger: #f2877d;
+  --danger-soft: #3a2420;
+  --danger-border: #5c3530;
+  --shadow-float: 0 10px 28px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 *,
@@ -24,18 +109,36 @@ body {
   margin: 0;
 }
 
+html {
+  background: var(--bg);
+}
+
 body {
   display: flex;
   flex-direction: column;
   height: 100dvh;
   background: var(--bg);
-  color: var(--text);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--accent-ink);
 }
 
 button,
+input,
 textarea {
   font: inherit;
   color: inherit;
@@ -47,7 +150,16 @@ button {
 
 button:disabled {
   cursor: default;
-  opacity: 0.55;
+}
+
+/* One visible focus ring for everything interactive. */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--accent-soft);
 }
 
 /* Everything under the top nav. Pages fill it and scroll inside it. */
@@ -56,4 +168,107 @@ button:disabled {
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+/* Buttons used across the app. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: 36px;
+  padding: 0 var(--s-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    background-color var(--t-fast) ease,
+    border-color var(--t-fast) ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+}
+
+.btn-primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.btn-ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  color: var(--ink);
+}
+
+.btn-danger {
+  border-color: transparent;
+  background: var(--danger);
+  color: var(--surface);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--danger);
+  filter: brightness(0.92);
+}
+
+.btn-sm {
+  min-height: 32px;
+  padding: 0 var(--s-3);
+  font-size: 13px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Motion is only short fades and slides, and none of it runs when the user asks for less. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -1,41 +1,61 @@
+/* A floating card, top right, over whatever page is open. */
 .banner {
+  position: fixed;
+  z-index: 40;
+  top: 60px;
+  right: var(--s-4);
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  border-bottom: 1px solid var(--border);
-  background: var(--border);
+  gap: var(--s-2);
+  width: min(380px, calc(100vw - 32px));
 }
 
-.item {
+.card {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 8px 16px;
-  background: var(--reminder-bg);
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-3) var(--s-3) var(--s-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+  animation: fade-in var(--t-base) ease;
+}
+
+.bell {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
 }
 
 .text {
+  flex: 1;
   min-width: 0;
   overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.text strong {
+  font-weight: 600;
 }
 
 .missed {
-  font-size: 14px;
+  margin-top: 2px;
   color: var(--muted);
-}
-
-.dismiss {
-  flex: none;
-  padding: 4px 14px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
+  font-size: 13px;
 }
 
 .error {
-  padding: 6px 16px;
-  background: var(--error-bg);
-  color: var(--error-text);
-  font-size: 14px;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--r-sm);
+  background: var(--danger-soft);
+  font-size: 13px;
 }

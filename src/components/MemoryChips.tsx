@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { ApiFailure, api } from "./api";
+import { IconBrain, IconX } from "./icons";
 import type { ClientOperation } from "./types";
-import styles from "./MemoryChips.module.css";
+import styles from "./Chips.module.css";
 
 interface Props {
   operations: ClientOperation[];
@@ -47,18 +48,20 @@ function Chip({ op, gone, onForgotten }: { op: Shown; gone: boolean; onForgotten
   if (gone) {
     return (
       <div className={`${styles.chip} ${styles.gone}`}>
-        <span>Forgotten</span>
+        <IconX size={16} className={styles.icon} />
+        <span className={styles.label}>Forgotten</span>
       </div>
     );
   }
   return (
     <div className={styles.chip}>
-      <span>
+      <IconBrain size={16} className={styles.icon} />
+      <span className={styles.label}>
         {op.kind === "memory.created"
           ? `Remembered: ${op.statement}`
           : `Updated: ${op.statement} (was: ${op.previousStatement})`}
       </span>
-      <button type="button" className={styles.forget} onClick={forget} disabled={busy}>
+      <button type="button" className={styles.action} onClick={forget} disabled={busy}>
         Forget
       </button>
       {failed && <span className={styles.failed}>{failed}</span>}

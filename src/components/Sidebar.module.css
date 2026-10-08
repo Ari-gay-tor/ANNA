@@ -1,28 +1,109 @@
 .sidebar {
-  width: 260px;
-  flex-shrink: 0;
   display: flex;
+  flex: none;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px 12px;
-  background: var(--panel);
+  gap: var(--s-3);
+  width: 260px;
+  padding: var(--s-4) var(--s-3) var(--s-3);
   border-right: 1px solid var(--border);
-  overflow-y: auto;
+  background: var(--surface-2);
+  min-height: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--s-2);
 }
 
 .brand {
-  margin: 0;
-  padding: 0 8px;
-  font-size: 18px;
-  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+}
+
+.closeButton {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--muted);
+}
+
+.closeButton:hover {
+  background: var(--hover);
+  color: var(--ink);
 }
 
 .newButton {
-  padding: 8px 12px;
-  border: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  width: 100%;
+  min-height: 40px;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 500;
+  text-align: left;
+  transition:
+    background-color var(--t-fast) ease,
+    border-color var(--t-fast) ease;
+}
+
+.newButton svg {
+  color: var(--accent-ink);
+}
+
+.newButton:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+.newButton:disabled {
+  opacity: 0.55;
+}
+
+.hint {
+  margin-left: auto;
+  padding: 2px 6px;
+  border: 1px solid var(--border);
   border-radius: 6px;
-  background: var(--accent);
-  color: var(--accent-text);
+  background: var(--surface-2);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 0 calc(var(--s-1) * -1);
+  padding: 0 var(--s-1) var(--s-4);
+}
+
+.group {
+  margin-top: var(--s-4);
+}
+
+.groupLabel {
+  padding: 0 var(--s-2) var(--s-1);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .list {
@@ -34,32 +115,202 @@
   list-style: none;
 }
 
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: var(--r-sm);
+  transition: background-color var(--t-fast) ease;
+}
+
+.row:hover,
+.rowMenuOpen {
+  background: var(--hover);
+}
+
+.rowActive,
+.rowActive:hover {
+  background: var(--accent-soft);
+}
+
 .item {
-  width: 100%;
-  padding: 8px;
+  flex: 1;
+  min-width: 0;
+  padding: 8px var(--s-2);
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   background: transparent;
+  color: var(--ink);
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.item:hover:not(:disabled) {
-  background: #e7e7e4;
-}
-
-.active {
-  background: #e0e8e5;
+.rowActive .item {
   font-weight: 600;
 }
 
-@media (max-width: 700px) {
+.item:disabled {
+  color: var(--muted);
+}
+
+.more {
+  position: absolute;
+  right: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity var(--t-fast) ease;
+}
+
+.row:hover .more,
+.row:focus-within .more,
+.rowActive .more,
+.rowMenuOpen .more {
+  opacity: 1;
+}
+
+.more:hover {
+  background: var(--border);
+  color: var(--ink);
+}
+
+/* Room for the button so a long title does not run under it. */
+.row:hover .item,
+.row:focus-within .item,
+.rowActive .item,
+.rowMenuOpen .item {
+  padding-right: 34px;
+}
+
+@media (hover: none) {
+  .more {
+    opacity: 1;
+  }
+
+  .item {
+    padding-right: 34px;
+  }
+}
+
+.renameRow {
+  padding: 2px 0;
+}
+
+.renameInput {
+  width: 100%;
+  min-height: 36px;
+  padding: 0 var(--s-2);
+  border: 1px solid var(--accent);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--ink);
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.renameError {
+  padding: var(--s-1) var(--s-2) 0;
+  color: var(--danger);
+  font-size: 13px;
+}
+
+.menu {
+  position: fixed;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+  padding: var(--s-1);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+  animation: fade-in var(--t-fast) ease;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 36px;
+  padding: 0 var(--s-3);
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+}
+
+.menuItem:hover:not(:disabled),
+.menuItem:focus-visible {
+  background: var(--hover);
+}
+
+.menuItem:disabled {
+  opacity: 0.5;
+}
+
+.menuDanger {
+  color: var(--danger);
+}
+
+.backdrop {
+  display: none;
+}
+
+/* Narrow screens: the sidebar becomes a drawer behind the menu button. */
+@media (max-width: 759px) {
   .sidebar {
-    width: 100%;
-    max-height: 35vh;
-    border-right: 0;
-    border-bottom: 1px solid var(--border);
+    position: fixed;
+    z-index: 30;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: min(300px, 86vw);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition:
+      transform var(--t-base) ease,
+      visibility 0s linear var(--t-base);
+  }
+
+  .open {
+    transform: none;
+    visibility: visible;
+    box-shadow: var(--shadow-float);
+    transition-delay: 0s;
+  }
+
+  .closeButton {
+    display: inline-flex;
+  }
+
+  .hint {
+    display: none;
+  }
+
+  .backdrop {
+    position: fixed;
+    z-index: 20;
+    inset: 0;
+    display: block;
+    background: var(--overlay);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--t-base) ease;
+  }
+
+  .backdropOpen {
+    opacity: 1;
+    pointer-events: auto;
   }
 }

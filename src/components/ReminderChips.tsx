@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { formatReminderDue } from "@/core/time/format-reminder-time";
 import { ApiFailure, api } from "./api";
+import { IconBell, IconCheck, IconX } from "./icons";
 import type { ClientOperation } from "./types";
-import styles from "./MemoryChips.module.css";
+import styles from "./Chips.module.css";
 
 type Shown = Extract<ClientOperation, { kind: "reminder.created" }>;
 type ChipStatus = "pending" | "fired" | "cancelled";
@@ -46,18 +47,21 @@ function Chip({ op }: { op: Shown }) {
   }
 
   if (status !== "pending") {
+    const cancelled = status === "cancelled";
     return (
       <div className={`${styles.chip} ${styles.gone}`}>
-        <span>{status === "cancelled" ? "Cancelled" : "Done"}</span>
+        {cancelled ? <IconX size={16} className={styles.icon} /> : <IconCheck size={16} className={styles.icon} />}
+        <span className={styles.label}>{cancelled ? "Cancelled" : "Done"}</span>
       </div>
     );
   }
   return (
     <div className={styles.chip}>
-      <span>
+      <IconBell size={16} className={styles.icon} />
+      <span className={styles.label}>
         Reminder set: {op.text} · {formatReminderDue(new Date(op.dueAt), op.timezone, new Date())}
       </span>
-      <button type="button" className={styles.forget} onClick={cancel} disabled={busy}>
+      <button type="button" className={styles.action} onClick={cancel} disabled={busy}>
         Cancel
       </button>
       {failed && <span className={styles.failed}>{failed}</span>}

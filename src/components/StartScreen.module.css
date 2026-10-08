@@ -1,0 +1,63 @@
+.scroll {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow-y: auto;
+}
+
+.start {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+  margin: auto;
+  padding: var(--s-8) var(--s-4);
+  text-align: center;
+  animation: fade-in var(--t-base) ease;
+}
+
+.greeting {
+  margin-top: var(--s-5);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.prompt {
+  margin-top: var(--s-1);
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.starters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  width: 100%;
+  margin-top: var(--s-8);
+}
+
+.starter {
+  min-height: 48px;
+  padding: 0 var(--s-5);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 15px;
+  text-align: left;
+  transition:
+    background-color var(--t-fast) ease,
+    border-color var(--t-fast) ease;
+}
+
+.starter:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.starter:disabled {
+  opacity: 0.55;
+}

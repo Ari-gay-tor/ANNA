@@ -43,6 +43,10 @@ export const api = {
   listConversations: () => request<{ conversations: ClientConversation[] }>("/api/conversations"),
   getConversation: (id: string) =>
     request<{ conversation: ClientConversation; messages: ClientMessage[] }>(`/api/conversations/${encodeURIComponent(id)}`),
+  renameConversation: (id: string, title: string) =>
+    request<{ conversation: ClientConversation }>(`/api/conversations/${encodeURIComponent(id)}`, json("PATCH", { title })),
+  deleteConversation: (id: string) =>
+    request<{ deleted: true }>(`/api/conversations/${encodeURIComponent(id)}`, { method: "DELETE" }),
   chat: (conversationId: string | undefined, text: string, selectedOption?: boolean) =>
     request<{ conversationId: string; userMessage: ClientMessage; assistantMessage: ClientMessage }>(
       "/api/chat",

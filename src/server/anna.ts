@@ -1,10 +1,10 @@
 // Composition root: reads env once and wires the runtime to Prisma and an LLM provider.
 
-import type { ConversationRepository, MemoryRepository, ReminderRepository, SettingsRepository } from "../core/ports";
+import type { MemoryRepository, ReminderRepository, SettingsRepository } from "../core/ports";
 import { createAnna, type Anna } from "../core/runtime/anna";
 import { createMemoryService, type MemoryService } from "../core/runtime/memory-service";
 import { createReminderService, type ReminderService } from "../core/runtime/reminder-service";
-import { PrismaConversationRepository } from "../data/conversation-repository";
+import { PrismaConversationRepository, type ManagedConversationRepository } from "../data/conversation-repository";
 import { PrismaMemoryRepository } from "../data/memory-repository";
 import { getPrisma } from "../data/prisma";
 import { PrismaReminderRepository } from "../data/reminder-repository";
@@ -13,7 +13,7 @@ import { createProvider, withReplyLogging } from "./providers";
 
 export interface Services {
   anna: Anna;
-  conversations: ConversationRepository;
+  conversations: ManagedConversationRepository;
   settings: SettingsRepository;
   memories: MemoryRepository;
   memoryService: MemoryService;

@@ -1,0 +1,190 @@
+/* Shared by the Memory and Reminders pages. */
+.page {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--s-8) var(--s-4) 64px;
+}
+
+.inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.lead {
+  margin-top: var(--s-1);
+  color: var(--muted);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.empty {
+  margin-top: var(--s-6);
+  padding: var(--s-6);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-md);
+  color: var(--muted);
+  text-align: center;
+}
+
+.error,
+.itemError {
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--r-md);
+  background: var(--danger-soft);
+  color: var(--ink);
+}
+
+.error {
+  margin-top: var(--s-4);
+}
+
+.itemError {
+  margin-top: var(--s-3);
+  font-size: 14px;
+}
+
+.group {
+  margin-top: var(--s-8);
+}
+
+.groupTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-bottom: var(--s-3);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  padding: var(--s-4) var(--s-5);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  animation: fade-in var(--t-base) ease;
+}
+
+.statement,
+.text {
+  font-size: 16px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+  margin-top: var(--s-2);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.pill {
+  padding: 1px var(--s-2);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
+.pillSoft {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+.quote {
+  margin: var(--s-3) 0 0;
+  padding-left: var(--s-3);
+  border-left: 2px solid var(--border-strong);
+  color: var(--muted);
+  font-size: 14px;
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+
+.editor {
+  width: 100%;
+  resize: vertical;
+  padding: var(--s-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.editor:focus-visible {
+  border-color: var(--accent);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}
+
+.notify {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+  color: var(--muted);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+
+.rowTop {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+}
+
+.rowIcon {
+  flex: none;
+  margin-top: 3px;
+  color: var(--accent-ink);
+}
+
+.rowBody {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 759px) {
+  .page {
+    padding-top: var(--s-6);
+  }
+
+  .card {
+    padding: var(--s-4);
+  }
+}

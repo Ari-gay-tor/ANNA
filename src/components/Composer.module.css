@@ -1,25 +1,82 @@
-.composer {
+.wrap {
+  flex: none;
+  width: 100%;
+  max-width: 752px; /* the 720px message column plus its 16px gutters */
+  margin: 0 auto;
+  padding: var(--s-2) var(--s-4) var(--s-3);
+}
+
+.box {
   display: flex;
-  gap: 8px;
-  padding: 12px 16px 16px;
-  border-top: 1px solid var(--border);
+  align-items: flex-end;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-2) var(--s-2) var(--s-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+  transition: border-color var(--t-fast) ease;
+}
+
+.box:focus-within {
+  border-color: var(--accent);
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
 }
 
 .input {
   flex: 1;
   min-width: 0;
+  min-height: 24px;
+  max-height: 200px;
+  padding: 6px 0;
+  border: 0;
+  outline: 0;
   resize: none;
-  padding: 8px 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
+  background: transparent;
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.input::placeholder {
+  color: var(--muted);
 }
 
 .send {
-  align-self: flex-end;
-  padding: 8px 18px;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 50%;
   background: var(--accent);
-  color: var(--accent-text);
+  color: var(--on-accent);
+  transition:
+    background-color var(--t-fast) ease,
+    opacity var(--t-fast) ease;
+}
+
+.send:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.send:disabled {
+  background: var(--border);
+  color: var(--muted);
+}
+
+.help {
+  margin-top: var(--s-2);
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+@media (hover: none), (max-width: 759px) {
+  .help {
+    display: none;
+  }
 }

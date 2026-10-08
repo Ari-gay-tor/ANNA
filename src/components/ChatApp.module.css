@@ -11,29 +11,66 @@
   flex-direction: column;
 }
 
+/* Narrow screens only: the button that opens the conversations drawer. */
+.topbar {
+  display: none;
+  flex: none;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-1) var(--s-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.menuButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-left: calc(var(--s-2) * -1);
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink);
+}
+
+.menuButton:hover {
+  background: var(--hover);
+}
+
+.topbarTitle {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A soft card, not an alarm: what went wrong, and Retry when retrying makes sense. */
 .error {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin: 0 16px 8px;
-  padding: 10px 12px;
-  border-radius: 6px;
-  background: var(--error-bg);
-  color: var(--error-text);
+  gap: var(--s-3);
+  width: 100%;
+  margin-top: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--r-md);
+  background: var(--danger-soft);
+  color: var(--ink);
+  text-align: left;
+  animation: fade-in var(--t-base) ease;
 }
 
-.error button {
-  flex-shrink: 0;
-  padding: 4px 12px;
-  border: 1px solid var(--error-text);
-  border-radius: 6px;
-  background: transparent;
-  color: var(--error-text);
+.errorText {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
-@media (max-width: 700px) {
-  .layout {
-    flex-direction: column;
+@media (max-width: 759px) {
+  .topbar {
+    display: flex;
   }
 }

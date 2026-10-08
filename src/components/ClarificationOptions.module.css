@@ -1,20 +1,46 @@
 .options {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+  animation: fade-in var(--t-base) ease;
 }
 
+/* Same size and tap target for every option; "Not sure" just has less visual weight. */
 .option {
+  min-height: 36px;
   max-width: 100%;
-  padding: 4px 12px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--panel);
+  padding: 0 var(--s-4);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--accent-ink);
   font-size: 14px;
+  font-weight: 500;
+  text-align: left;
   overflow-wrap: anywhere;
+  transition:
+    background-color var(--t-fast) ease,
+    color var(--t-fast) ease;
 }
 
 .option:hover:not(:disabled) {
-  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.option:disabled {
+  opacity: 0.55;
+}
+
+.quiet {
+  border-color: var(--border-strong);
+  border-style: dashed;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.quiet:hover:not(:disabled) {
+  background: var(--hover);
+  color: var(--ink);
 }

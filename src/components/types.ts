@@ -33,6 +33,8 @@ export interface ClientMemory {
   evidenceQuote: string | null;
   sourceConversationId: string | null;
   sourceMessageId: string | null;
+  /** Whether the source conversation still exists. Absent on a memory returned by an edit; keep the value you already have. */
+  sourceExists?: boolean;
   createdAt: string;
   updatedAt: string;
 }

@@ -1,3 +1,4 @@
+import { NOT_SURE_LABEL } from "@/core/runtime/clarification";
 import styles from "./ClarificationOptions.module.css";
 
 interface Props {
@@ -13,7 +14,13 @@ export function ClarificationOptions({ options, disabled, onSelect }: Props) {
   return (
     <div className={styles.options} role="group" aria-label="Answer options">
       {options.map((option) => (
-        <button key={option} type="button" className={styles.option} disabled={disabled} onClick={() => onSelect(option)}>
+        <button
+          key={option}
+          type="button"
+          className={option === NOT_SURE_LABEL ? `${styles.option} ${styles.quiet}` : styles.option}
+          disabled={disabled}
+          onClick={() => onSelect(option)}
+        >
           {option}
         </button>
       ))}

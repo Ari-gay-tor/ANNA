@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { AnnaMark } from "./AnnaMark";
 import { ClarificationOptions } from "./ClarificationOptions";
 import { MemoryChips } from "./MemoryChips";
 import { ReminderChips } from "./ReminderChips";
@@ -8,47 +9,85 @@ import styles from "./MessageList.module.css";
 interface Props {
   messages: ClientMessage[];
   thinking: boolean;
-  /** True while the selected conversation is being fetched, so the empty hint does not flash. */
-  loading: boolean;
   /** A clarification option was tapped. Sends its text as a user message with selectedOption. */
   onSelectOption: (text: string) => void;
+  /** Rendered after the last message, inside the scrolling column (the error card). */
+  footer?: ReactNode;
 }
 
-export function MessageList({ messages, thinking, loading, onSelectOption }: Props) {
+function timeOf(iso: string): string {
+  return new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+
+export function MessageList({ messages, thinking, onSelectOption, footer }: Props) {
   const endRef = useRef<HTMLDivElement>(null);
+  const hasFooter = Boolean(footer); // not the element itself: that is a new object every render and would re-scroll
   // Memories forgotten from a chip. Shared, so every chip pointing at the same memory flips together.
   const [forgotten, setForgotten] = useState<ReadonlySet<string>>(new Set());
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
-  }, [messages, thinking]);
+  }, [messages, thinking, hasFooter]);
 
   return (
-    <div className={styles.list}>
-      {messages.length === 0 && !thinking && !loading && <p className={styles.empty}>Say something to start.</p>}
-      {messages.map((m, index) => (
-        <div key={m.id} className={m.role === "user" ? `${styles.message} ${styles.user}` : styles.message}>
-          <div className={styles.author}>
-            {m.role === "user" ? "You" : "ANNA"}
-            {m.role === "user" && m.selectedOption && <span className={styles.tag}>option</span>}
+    <div className={styles.scroll}>
+      <div className={styles.column} role="log" aria-label="Conversation">
+        {messages.map((m, index) => {
+          const time = (
+            <time className={styles.time} dateTime={m.createdAt} title={new Date(m.createdAt).toLocaleString()}>
+              {timeOf(m.createdAt)}
+            </time>
+          );
+          if (m.role === "user") {
+            return (
+              <div key={m.id} className={`${styles.row} ${styles.user}`}>
+                <div className={styles.bubble}>{m.content}</div>
+                <div className={styles.meta}>
+                  {m.selectedOption && <span className={styles.tag}>option</span>}
+                  {time}
+                </div>
+              </div>
+            );
+          }
+          return (
+            <div key={m.id} className={`${styles.row} ${styles.assistant}`}>
+              <div className={styles.markSlot}>
+                <AnnaMark size={26} />
+              </div>
+              <div className={styles.body}>
+                <div className={styles.text}>{m.content}</div>
+                {m.operations && (
+                  <MemoryChips
+                    operations={m.operations}
+                    forgotten={forgotten}
+                    onForgotten={(id) => setForgotten((prev) => new Set(prev).add(id))}
+                  />
+                )}
+                {m.operations && <ReminderChips operations={m.operations} />}
+                {/* Buttons only on the very last message: any user message after it (typed or tapped) removes them. */}
+                {m.clarification && index === messages.length - 1 && (
+                  <ClarificationOptions options={m.clarification.options} disabled={thinking} onSelect={onSelectOption} />
+                )}
+                <div className={styles.meta}>{time}</div>
+              </div>
+            </div>
+          );
+        })}
+        {thinking && (
+          <div className={`${styles.row} ${styles.assistant}`} role="status" aria-label="ANNA is thinking">
+            <div className={styles.markSlot}>
+              <AnnaMark size={26} />
+            </div>
+            <div className={styles.dots} aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </div>
           </div>
-          <div className={styles.content}>{m.content}</div>
-          {m.role === "assistant" && m.operations && (
-            <MemoryChips
-              operations={m.operations}
-              forgotten={forgotten}
-              onForgotten={(id) => setForgotten((prev) => new Set(prev).add(id))}
-            />
-          )}
-          {m.role === "assistant" && m.operations && <ReminderChips operations={m.operations} />}
-          {/* Buttons only on the very last message: any user message after it (typed or tapped) removes them. */}
-          {m.role === "assistant" && m.clarification && index === messages.length - 1 && (
-            <ClarificationOptions options={m.clarification.options} disabled={thinking} onSelect={onSelectOption} />
-          )}
-        </div>
-      ))}
-      {thinking && <div className={styles.thinking}>thinking…</div>}
-      <div ref={endRef} />
+        )}
+        {footer}
+        <div ref={endRef} />
+      </div>
     </div>
   );
 }

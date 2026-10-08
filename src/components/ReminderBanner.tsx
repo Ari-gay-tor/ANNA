@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiFailure, api } from "./api";
+import { IconBell } from "./icons";
 import { missedMessage, reminderMessage } from "./reminder-text";
 import type { ClientReminder } from "./types";
 import styles from "./ReminderBanner.module.css";
@@ -95,12 +96,15 @@ export function ReminderBanner() {
   return (
     <div className={styles.banner} role="status" aria-live="polite">
       {reminders.map((r) => (
-        <div key={r.id} className={styles.item}>
+        <div key={r.id} className={styles.card}>
+          <span className={styles.bell}>
+            <IconBell size={18} />
+          </span>
           <div className={styles.text}>
             <strong>{reminderMessage(r)}</strong>
             {r.missed && <div className={styles.missed}>{missedMessage(r, now)}</div>}
           </div>
-          <button type="button" className={styles.dismiss} onClick={() => void dismiss(r.id)}>
+          <button type="button" className="btn btn-sm" onClick={() => void dismiss(r.id)}>
             Dismiss
           </button>
         </div>
